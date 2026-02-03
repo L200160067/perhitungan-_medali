@@ -1,0 +1,50 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Event;
+use App\Models\TournamentCategory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<TournamentCategory>
+ */
+class TournamentCategoryFactory extends Factory
+{
+    protected $model = TournamentCategory::class;
+
+    public function definition(): array
+    {
+        $minAge = $this->faker->numberBetween(8, 14);
+        $maxAge = $this->faker->numberBetween($minAge + 1, $minAge + 6);
+        $minWeight = $this->faker->randomFloat(2, 20, 50);
+        $maxWeight = $this->faker->randomFloat(2, $minWeight + 1, $minWeight + 15);
+
+        return [
+            'event_id' => Event::factory(),
+            'name' => $this->faker->words(2, true),
+            'type' => 'kyourugi',
+            'gender' => $this->faker->randomElement(TournamentCategory::GENDERS),
+            'age_reference_date' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'min_age' => $minAge,
+            'max_age' => $maxAge,
+            'weight_class_name' => 'Under ' . number_format($maxWeight, 2) . ' kg',
+            'min_weight' => $minWeight,
+            'max_weight' => $maxWeight,
+            'poomsae_type' => null,
+        ];
+    }
+
+    public function poomsae(): static
+    {
+        return $this->state(function () {
+            return [
+                'type' => 'poomsae',
+                'poomsae_type' => $this->faker->randomElement(TournamentCategory::POOMSAE_TYPES),
+                'weight_class_name' => null,
+                'min_weight' => null,
+                'max_weight' => null,
+            ];
+        });
+    }
+}
