@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RegistrationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,15 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Registration extends Model
 {
     use HasFactory;
-
-    public const STATUSES = [
-        'registered',
-        'passed_weigh_in',
-        'failed_weigh_in',
-        'competed',
-        'dns',
-        'dq',
-    ];
 
     /**
      * @var list<string>
@@ -51,5 +43,15 @@ class Registration extends Model
     public function medal(): BelongsTo
     {
         return $this->belongsTo(Medal::class);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => RegistrationStatus::class,
+        ];
     }
 }

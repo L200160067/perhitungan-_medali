@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\PoomsaeType;
+use App\Enums\TournamentGender;
+use App\Enums\TournamentType;
 use App\Models\Event;
 use App\Models\TournamentCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,8 +26,8 @@ class TournamentCategoryFactory extends Factory
         return [
             'event_id' => Event::factory(),
             'name' => $this->faker->words(2, true),
-            'type' => 'kyourugi',
-            'gender' => $this->faker->randomElement(TournamentCategory::GENDERS),
+            'type' => TournamentType::Kyourugi,
+            'gender' => $this->faker->randomElement(TournamentGender::cases()),
             'age_reference_date' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'min_age' => $minAge,
             'max_age' => $maxAge,
@@ -39,8 +42,8 @@ class TournamentCategoryFactory extends Factory
     {
         return $this->state(function () {
             return [
-                'type' => 'poomsae',
-                'poomsae_type' => $this->faker->randomElement(TournamentCategory::POOMSAE_TYPES),
+                'type' => TournamentType::Poomsae,
+                'poomsae_type' => $this->faker->randomElement(PoomsaeType::cases()),
                 'weight_class_name' => null,
                 'min_weight' => null,
                 'max_weight' => null,

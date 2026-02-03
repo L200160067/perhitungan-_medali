@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\PoomsaeType;
+use App\Enums\TournamentGender;
+use App\Enums\TournamentType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,23 +13,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class TournamentCategory extends Model
 {
     use HasFactory;
-
-    public const TYPES = [
-        'kyourugi',
-        'poomsae',
-    ];
-
-    public const GENDERS = [
-        'M',
-        'F',
-        'Mixed',
-    ];
-
-    public const POOMSAE_TYPES = [
-        'individual',
-        'pair',
-        'team',
-    ];
 
     /**
      * @var list<string>
@@ -72,6 +58,9 @@ class TournamentCategory extends Model
             'max_age' => 'integer',
             'min_weight' => 'decimal:2',
             'max_weight' => 'decimal:2',
+            'type' => TournamentType::class,
+            'gender' => TournamentGender::class,
+            'poomsae_type' => PoomsaeType::class,
         ];
     }
 }

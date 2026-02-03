@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ParticipantGender;
 use App\Models\Dojang;
 use App\Models\Participant;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,7 +19,7 @@ class ParticipantFactory extends Factory
         return [
             'dojang_id' => Dojang::factory(),
             'name' => $this->faker->name(),
-            'gender' => $this->faker->randomElement(Participant::GENDERS),
+            'gender' => $this->faker->randomElement(ParticipantGender::cases()),
             'birth_date' => $this->faker->dateTimeBetween('-30 years', '-10 years'),
         ];
     }

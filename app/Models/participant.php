@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ParticipantGender;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,11 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Participant extends Model
 {
     use HasFactory;
-
-    public const GENDERS = [
-        'M',
-        'F',
-    ];
 
     /**
      * @var list<string>
@@ -40,6 +36,7 @@ class Participant extends Model
     {
         return [
             'birth_date' => 'date',
+            'gender' => ParticipantGender::class,
         ];
     }
 }

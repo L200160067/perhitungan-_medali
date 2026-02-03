@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\RegistrationStatus;
 use App\Models\Contingent;
 use App\Models\Medal;
 use App\Models\Registration;
@@ -21,7 +22,7 @@ class RegistrationFactory extends Factory
             'category_id' => TournamentCategory::factory(),
             'contingent_id' => Contingent::factory(),
             'medal_id' => null,
-            'status' => 'registered',
+            'status' => RegistrationStatus::Registered,
         ];
     }
 
@@ -32,7 +33,7 @@ class RegistrationFactory extends Factory
         ]);
     }
 
-    public function status(string $status): static
+    public function status(RegistrationStatus $status): static
     {
         return $this->state([
             'status' => $status,
