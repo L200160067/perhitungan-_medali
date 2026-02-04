@@ -49,15 +49,20 @@ class MedalController extends Controller
      */
     private function rules(bool $isUpdate = false, ?Medal $medal = null): array
     {
-        $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
+        $presenceRules = $isUpdate ? ['sometimes', 'required'] : ['required'];
         $nameRule = Rule::unique('medals', 'name');
         if ($medal) {
             $nameRule = $nameRule->ignore($medal->id);
         }
 
         return [
-            'name' => [$prefix . 'string|max:255', $nameRule],
-            'rank' => $prefix . 'integer|min:1',
+            'name' => [
+                ...$presenceRules,
+                'string',
+                'max:255',
+                $nameRule,
+            ],
+            'rank' => ($isUpdate ? 'sometimes|required|' : 'required|') . 'integer|min:1',
         ];
     }
 }

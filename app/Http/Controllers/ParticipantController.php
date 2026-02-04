@@ -50,14 +50,18 @@ class ParticipantController extends Controller
      */
     private function rules(bool $isUpdate = false): array
     {
-        $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
+        $presenceRules = $isUpdate ? ['sometimes', 'required'] : ['required'];
         $genderValues = array_map(fn (ParticipantGender $gender) => $gender->value, ParticipantGender::cases());
 
         return [
-            'dojang_id' => $prefix . 'integer|exists:dojangs,id',
-            'name' => $prefix . 'string|max:255',
-            'gender' => [$prefix . 'string', Rule::in($genderValues)],
-            'birth_date' => $prefix . 'date',
+            'dojang_id' => ($isUpdate ? 'sometimes|required|' : 'required|') . 'integer|exists:dojangs,id',
+            'name' => ($isUpdate ? 'sometimes|required|' : 'required|') . 'string|max:255',
+            'gender' => [
+                ...$presenceRules,
+                'string',
+                Rule::in($genderValues),
+            ],
+            'birth_date' => ($isUpdate ? 'sometimes|required|' : 'required|') . 'date',
         ];
     }
 }

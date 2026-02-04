@@ -51,15 +51,18 @@ class RegistrationController extends Controller
     private function rules(bool $isUpdate = false): array
     {
         $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
+        $presenceRules = $isUpdate ? ['sometimes'] : ['sometimes'];
         $statusValues = array_map(fn (RegistrationStatus $status) => $status->value, RegistrationStatus::cases());
 
         return [
             'category_id' => $prefix . 'integer|exists:tournament_categories,id',
             'contingent_id' => $prefix . 'integer|exists:contingents,id',
             'medal_id' => $isUpdate ? 'sometimes|nullable|integer|exists:medals,id' : 'nullable|integer|exists:medals,id',
-            'status' => $isUpdate
-                ? ['sometimes', 'string', Rule::in($statusValues)]
-                : ['sometimes', 'string', Rule::in($statusValues)],
+            'status' => [
+                ...$presenceRules,
+                'string',
+                Rule::in($statusValues),
+            ],
         ];
     }
 }

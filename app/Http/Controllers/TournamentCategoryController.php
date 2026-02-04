@@ -53,6 +53,7 @@ class TournamentCategoryController extends Controller
     private function rules(bool $isUpdate = false): array
     {
         $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
+        $presenceRules = $isUpdate ? ['sometimes', 'required'] : ['required'];
         $typeValues = array_map(fn (TournamentType $type) => $type->value, TournamentType::cases());
         $genderValues = array_map(fn (TournamentGender $gender) => $gender->value, TournamentGender::cases());
         $poomsaeValues = array_map(fn (PoomsaeType $type) => $type->value, PoomsaeType::cases());
@@ -60,8 +61,16 @@ class TournamentCategoryController extends Controller
         return [
             'event_id' => $prefix . 'integer|exists:events,id',
             'name' => $prefix . 'string|max:255',
-            'type' => [$prefix . 'string', Rule::in($typeValues)],
-            'gender' => [$prefix . 'string', Rule::in($genderValues)],
+            'type' => [
+                ...$presenceRules,
+                'string',
+                Rule::in($typeValues),
+            ],
+            'gender' => [
+                ...$presenceRules,
+                'string',
+                Rule::in($genderValues),
+            ],
             'age_reference_date' => $prefix . 'date',
             'min_age' => $prefix . 'integer|min:0',
             'max_age' => $prefix . 'integer|min:0',
