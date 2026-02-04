@@ -33,7 +33,7 @@ class RegistrationFactory extends Factory
         ]);
     }
 
-    public function status(RegistrationStatus $status): static
+    public function status(RegistrationStatus|string $status): static
     {
         return $this->state([
             'status' => $status,

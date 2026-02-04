@@ -50,4 +50,39 @@ class TournamentCategoryFactory extends Factory
             ];
         });
     }
+
+    public function kyourugi(): static
+    {
+        $minWeight = $this->faker->randomFloat(2, 20, 50);
+        $maxWeight = $this->faker->randomFloat(2, $minWeight + 1, $minWeight + 15);
+
+        return $this->state([
+            'type' => TournamentType::Kyourugi,
+            'poomsae_type' => null,
+            'weight_class_name' => 'Under ' . number_format($maxWeight, 2) . ' kg',
+            'min_weight' => $minWeight,
+            'max_weight' => $maxWeight,
+        ]);
+    }
+
+    public function type(TournamentType|string $type): static
+    {
+        return $this->state([
+            'type' => $type,
+        ]);
+    }
+
+    public function gender(TournamentGender|string $gender): static
+    {
+        return $this->state([
+            'gender' => $gender,
+        ]);
+    }
+
+    public function poomsaeType(PoomsaeType|string $poomsaeType): static
+    {
+        return $this->state([
+            'poomsae_type' => $poomsaeType,
+        ]);
+    }
 }
