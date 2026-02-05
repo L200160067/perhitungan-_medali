@@ -17,8 +17,9 @@
         <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div><dt class="text-sm font-medium text-gray-500">ID</dt><dd class="mt-1 text-sm text-gray-900">{{ $registration->id }}</dd></div>
             <div><dt class="text-sm font-medium text-gray-500">Category</dt><dd class="mt-1 text-sm text-gray-900"><a href="{{ route('tournament-categories.show', $registration->category) }}" class="text-blue-600 hover:text-blue-800">{{ $registration->category->name }}</a></dd></div>
+            <div><dt class="text-sm font-medium text-gray-500">Participant</dt><dd class="mt-1 text-sm text-gray-900">{{ $registration->participant->name }}</dd></div>
             <div><dt class="text-sm font-medium text-gray-500">Contingent</dt><dd class="mt-1 text-sm text-gray-900"><a href="{{ route('contingents.show', $registration->contingent) }}" class="text-blue-600 hover:text-blue-800">{{ $registration->contingent->name }}</a></dd></div>
-            <div><dt class="text-sm font-medium text-gray-500">Status</dt><dd class="mt-1 text-sm text-gray-900">{{ ucfirst(str_replace('_', ' ', $registration->status->value)) }}</dd></div>
+            <div><dt class="text-sm font-medium text-gray-500">Status</dt><dd class="mt-1 text-sm text-gray-900"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $registration->status->color() }}">{{ ucfirst(str_replace('_', ' ', $registration->status->value)) }}</span></dd></div>
             <div><dt class="text-sm font-medium text-gray-500">Medal</dt><dd class="mt-1 text-sm text-gray-900">{{ $registration->medal ? ucfirst($registration->medal->name) : 'No medal' }}</dd></div>
         </dl>
     </div>

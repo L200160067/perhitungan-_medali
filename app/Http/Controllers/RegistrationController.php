@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\RegistrationStatus;
 use App\Models\Contingent;
 use App\Models\Medal;
+use App\Models\Participant;
 use App\Models\Registration;
 use App\Models\TournamentCategory;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class RegistrationController extends Controller
 {
     public function index()
     {
-        $registrations = Registration::query()->with(['category', 'contingent', 'medal'])->get();
+        $registrations = Registration::query()->with(['category', 'participant', 'contingent', 'medal'])->get();
 
         if (request()->expectsJson()) {
             return response()->json($registrations);
@@ -27,11 +28,12 @@ class RegistrationController extends Controller
     public function create()
     {
         $categories = TournamentCategory::all();
+        $participants = Participant::all();
         $contingents = Contingent::all();
         $medals = Medal::all();
         $statuses = RegistrationStatus::cases();
 
-        return view('registrations.create', compact('categories', 'contingents', 'medals', 'statuses'));
+        return view('registrations.create', compact('categories', 'participants', 'contingents', 'medals', 'statuses'));
     }
 
     public function store(Request $request)
@@ -71,7 +73,7 @@ class RegistrationController extends Controller
 
     public function show(Registration $registration)
     {
-        $registration->load(['category', 'contingent', 'medal']);
+        $registration->load(['category', 'participant', 'contingent', 'medal']);
 
         if (request()->expectsJson()) {
             return response()->json($registration);
@@ -83,11 +85,12 @@ class RegistrationController extends Controller
     public function edit(Registration $registration)
     {
         $categories = TournamentCategory::all();
+        $participants = Participant::all();
         $contingents = Contingent::all();
         $medals = Medal::all();
         $statuses = RegistrationStatus::cases();
 
-        return view('registrations.edit', compact('registration', 'categories', 'contingents', 'medals', 'statuses'));
+        return view('registrations.edit', compact('registration', 'categories', 'participants', 'contingents', 'medals', 'statuses'));
     }
 
     public function update(Request $request, Registration $registration)
@@ -150,6 +153,7 @@ class RegistrationController extends Controller
 
         return [
             'category_id' => $prefix.'integer|exists:tournament_categories,id',
+            'participant_id' => $prefix.'integer|exists:participants,id',
             'contingent_id' => $prefix.'integer|exists:contingents,id',
             'medal_id' => $isUpdate ? 'sometimes|nullable|integer|exists:medals,id' : 'nullable|integer|exists:medals,id',
             'status' => [

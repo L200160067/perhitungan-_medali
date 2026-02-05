@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\RegistrationStatus;
 use App\Models\Contingent;
 use App\Models\Medal;
+use App\Models\Participant;
 use App\Models\Registration;
 use App\Models\TournamentCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,6 +21,7 @@ class RegistrationFactory extends Factory
     {
         return [
             'category_id' => TournamentCategory::factory(),
+            'participant_id' => Participant::factory(),
             'contingent_id' => Contingent::factory(),
             'medal_id' => null,
             'status' => RegistrationStatus::Registered,

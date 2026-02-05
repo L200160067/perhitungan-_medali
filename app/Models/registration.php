@@ -16,6 +16,7 @@ class Registration extends Model
      */
     protected $fillable = [
         'category_id',
+        'participant_id',
         'contingent_id',
         'medal_id',
         'status',
@@ -27,6 +28,14 @@ class Registration extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(TournamentCategory::class, 'category_id');
+    }
+
+    /**
+     * @return BelongsTo<Participant, Registration>
+     */
+    public function participant(): BelongsTo
+    {
+        return $this->belongsTo(Participant::class);
     }
 
     /**

@@ -15,6 +15,7 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Participant</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contingent</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Medal</th>
@@ -26,8 +27,9 @@
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $registration->id }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><a href="{{ route('tournament-categories.show', $registration->category) }}" class="text-blue-600 hover:text-blue-800">{{ $registration->category->name }}</a></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $registration->participant->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><a href="{{ route('contingents.show', $registration->contingent) }}" class="text-blue-600 hover:text-blue-800">{{ $registration->contingent->name }}</a></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{{ ucfirst(str_replace('_', ' ', $registration->status->value)) }}</span></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $registration->status->color() }}">{{ ucfirst(str_replace('_', ' ', $registration->status->value)) }}</span></td>
                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm">{{ $registration->medal ? ucfirst($registration->medal->name) : '-' }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <a href="{{ route('registrations.show', $registration) }}" class="text-blue-600 hover:text-blue-900">View</a>
@@ -36,7 +38,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">No registrations found</td></tr>
+                <tr><td colspan="7" class="px-6 py-12 text-center text-gray-500">No registrations found</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -109,11 +109,13 @@ it('crud medals', function () {
 
 it('crud registrations', function () {
     $category = TournamentCategory::factory()->create();
+    $participant = Participant::factory()->create();
     $contingent = Contingent::factory()->create();
     $medal = Medal::factory()->gold()->create();
 
     $create = $this->postJson('/registrations', [
         'category_id' => $category->id,
+        'participant_id' => $participant->id,
         'contingent_id' => $contingent->id,
         'medal_id' => $medal->id,
         'status' => RegistrationStatus::Competed->value,
