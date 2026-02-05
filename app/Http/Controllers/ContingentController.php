@@ -12,7 +12,7 @@ class ContingentController extends Controller
 {
     public function index()
     {
-        $contingents = Contingent::query()->with(['event', 'dojang'])->get();
+        $contingents = Contingent::query()->with(['event', 'dojang'])->latest()->get();
 
         if (request()->expectsJson()) {
             return response()->json($contingents);

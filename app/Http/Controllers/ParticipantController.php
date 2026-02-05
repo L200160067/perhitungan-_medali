@@ -12,7 +12,7 @@ class ParticipantController extends Controller
 {
     public function index()
     {
-        $participants = Participant::query()->with('dojang')->get();
+        $participants = Participant::query()->with('dojang')->latest()->get();
 
         if (request()->expectsJson()) {
             return response()->json($participants);

@@ -16,7 +16,7 @@ class RegistrationController extends Controller
 {
     public function index()
     {
-        $registrations = Registration::query()->with(['category', 'participant', 'contingent', 'medal'])->get();
+        $registrations = Registration::query()->with(['category', 'participant', 'contingent', 'medal'])->latest()->get();
 
         if (request()->expectsJson()) {
             return response()->json($registrations);

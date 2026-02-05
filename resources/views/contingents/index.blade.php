@@ -13,7 +13,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pertandingan</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dojang</th>
@@ -23,7 +23,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($contingents as $contingent)
                 <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $contingent->id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $loop->iteration }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $contingent->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><a href="{{ route('events.show', $contingent->event) }}" class="text-blue-600 hover:text-blue-800">{{ $contingent->event->name ?? 'Pertandingan #' . $contingent->event_id }}</a></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><a href="{{ route('dojangs.show', $contingent->dojang) }}" class="text-blue-600 hover:text-blue-800">{{ $contingent->dojang->name }}</a></td>

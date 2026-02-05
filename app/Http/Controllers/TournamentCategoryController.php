@@ -16,7 +16,7 @@ class TournamentCategoryController extends Controller
 {
     public function index()
     {
-        $tournamentCategories = TournamentCategory::query()->with('event')->get();
+        $tournamentCategories = TournamentCategory::query()->with('event')->latest()->get();
 
         if (request()->expectsJson()) {
             return response()->json($tournamentCategories);

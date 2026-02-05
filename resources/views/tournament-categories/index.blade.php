@@ -13,7 +13,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
@@ -25,7 +25,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($tournamentCategories as $category)
                 <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $category->id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $loop->iteration }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $category->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $category->type->value === 'kyourugi' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' }}">{{ $category->type->label() }}</span></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

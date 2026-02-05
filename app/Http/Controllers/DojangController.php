@@ -10,7 +10,7 @@ class DojangController extends Controller
 {
     public function index()
     {
-        $dojangs = Dojang::query()->withCount(['participants', 'contingents'])->get();
+        $dojangs = Dojang::query()->withCount(['participants', 'contingents'])->latest()->get();
 
         if (request()->expectsJson()) {
             return response()->json($dojangs);

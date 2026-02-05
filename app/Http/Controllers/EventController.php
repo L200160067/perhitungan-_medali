@@ -10,7 +10,7 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::query()->get();
+        $events = Event::query()->latest()->get();
 
         if (request()->expectsJson()) {
             return response()->json($events);
@@ -34,7 +34,7 @@ class EventController extends Controller
             return response()->json($event, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('events.index')->with('success', 'Event created successfully!');
+        return redirect()->route('events.index')->with('success', 'Pertandingan berhasil ditambahkan!');
     }
 
     public function show(Event $event)
@@ -61,7 +61,7 @@ class EventController extends Controller
             return response()->json($event);
         }
 
-        return redirect()->route('events.index')->with('success', 'Event updated successfully!');
+        return redirect()->route('events.index')->with('success', 'Pertandingan berhasil diperbarui!');
     }
 
     public function destroy(Event $event)
@@ -72,7 +72,7 @@ class EventController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('events.index')->with('success', 'Event deleted successfully!');
+        return redirect()->route('events.index')->with('success', 'Pertandingan berhasil dihapus!');
     }
 
     /**

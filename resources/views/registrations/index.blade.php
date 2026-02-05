@@ -13,7 +13,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipe</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Peserta</th>
@@ -26,7 +26,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($registrations as $registration)
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-4 whitespace-nowrap text-xs text-gray-500">{{ $registration->id }}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-xs text-gray-500">{{ $loop->iteration }}</td>
                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900"><a href="{{ route('tournament-categories.show', $registration->category) }}" class="text-blue-600 hover:text-blue-800">{{ $registration->category->name }}</a></td>
                     <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $registration->category->category_type->color() }}">
