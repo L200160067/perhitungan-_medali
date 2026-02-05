@@ -32,6 +32,26 @@ class Medal extends Model
         return $this->hasMany(Registration::class);
     }
 
+    public function color(): string
+    {
+        return match (strtolower($this->name)) {
+            'gold' => 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+            'silver' => 'bg-gray-100 text-gray-800 border border-gray-200',
+            'bronze' => 'bg-orange-100 text-orange-800 border border-orange-200',
+            default => 'bg-gray-100 text-gray-800',
+        };
+    }
+
+    public function label(): string
+    {
+        return match (strtolower($this->name)) {
+            'gold' => 'Emas',
+            'silver' => 'Perak',
+            'bronze' => 'Perunggu',
+            default => $this->name,
+        };
+    }
+
     /**
      * @return array<string, string>
      */

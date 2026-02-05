@@ -19,6 +19,17 @@ class DashboardController extends Controller
         $totalParticipants = Participant::count();
         $totalRegistrations = Registration::count();
 
+        // Get all events for the filter dropdown
+        $events = Event::orderByDesc('start_date')->get();
+
+        // Determine active event ID (from request or the most recent one)
+        $activeEventId = request('event_id');
+        if (!$activeEventId && $events->isNotEmpty()) {
+            $activeEventId = $events->first()->id;
+        }
+
+        $activeEvent = $events->find($activeEventId);
+
         // Medal standings - group by contingent (ONLY Prestasi categories count)
         $medalStandings = Contingent::query()
             ->select('contingents.*')
@@ -31,8 +42,14 @@ class DashboardController extends Controller
             ->leftJoin('registrations', 'contingents.id', '=', 'registrations.contingent_id')
             ->leftJoin('medals', 'registrations.medal_id', '=', 'medals.id')
             ->leftJoin('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
-            ->where('tournament_categories.category_type', '=', 'prestasi')
-            ->groupBy('contingents.id', 'contingents.name', 'contingents.event_id', 'contingents.dojang_id', 'contingents.created_at', 'contingents.updated_at')
+            ->where('tournament_categories.category_type', '=', 'prestasi');
+
+        // Apply event filter
+        if ($activeEventId) {
+            $medalStandings->where('contingents.event_id', $activeEventId);
+        }
+
+        $medalStandings = $medalStandings->groupBy('contingents.id', 'contingents.name', 'contingents.event_id', 'contingents.dojang_id', 'contingents.created_at', 'contingents.updated_at')
             ->having('total_medals', '>', 0)
             ->orderByDesc('gold_count')
             ->orderByDesc('silver_count')
@@ -44,6 +61,9 @@ class DashboardController extends Controller
             'totalDojangs',
             'totalParticipants',
             'totalRegistrations',
+            'events',
+            'activeEventId',
+            'activeEvent',
             'medalStandings'
         ));
     }

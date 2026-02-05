@@ -52,7 +52,7 @@
         <footer class="bg-white border-t border-gray-200 mt-12">
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <p class="text-center text-sm text-gray-500">
-                    &copy; {{ date('Y') }} Taekwondo Medal Calculation System. All rights reserved.
+                    &copy; {{ date('Y') }} Sistem Perhitungan Medali Taekwondo. Hak cipta dilindungi undang-undang.
                 </p>
             </div>
         </footer>

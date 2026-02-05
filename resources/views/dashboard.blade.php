@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', 'Beranda')
 
 @php
-    $header = 'Dashboard';
+    $header = 'Beranda';
 @endphp
 
 @section('content')
@@ -23,14 +23,14 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="truncate text-sm font-medium text-gray-500">Total Events</dt>
+                            <dt class="truncate text-sm font-medium text-gray-500">Total Pertandingan</dt>
                             <dd class="text-3xl font-semibold text-gray-900">{{ $totalEvents }}</dd>
                         </dl>
                     </div>
                 </div>
             </div>
             <div class="bg-gray-50 px-5 py-3">
-                <a href="{{ route('events.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all →</a>
+                <a href="{{ route('events.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-500">Lihat semua →</a>
             </div>
         </div>
 
@@ -47,14 +47,14 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="truncate text-sm font-medium text-gray-500">Total Dojangs</dt>
+                            <dt class="truncate text-sm font-medium text-gray-500">Total Dojang</dt>
                             <dd class="text-3xl font-semibold text-gray-900">{{ $totalDojangs }}</dd>
                         </dl>
                     </div>
                 </div>
             </div>
             <div class="bg-gray-50 px-5 py-3">
-                <a href="{{ route('dojangs.index') }}" class="text-sm font-medium text-green-600 hover:text-green-500">View all →</a>
+                <a href="{{ route('dojangs.index') }}" class="text-sm font-medium text-green-600 hover:text-green-500">Lihat semua →</a>
             </div>
         </div>
 
@@ -71,14 +71,14 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="truncate text-sm font-medium text-gray-500">Total Participants</dt>
+                            <dt class="truncate text-sm font-medium text-gray-500">Total Peserta</dt>
                             <dd class="text-3xl font-semibold text-gray-900">{{ $totalParticipants }}</dd>
                         </dl>
                     </div>
                 </div>
             </div>
             <div class="bg-gray-50 px-5 py-3">
-                <a href="{{ route('participants.index') }}" class="text-sm font-medium text-purple-600 hover:text-purple-500">View all →</a>
+                <a href="{{ route('participants.index') }}" class="text-sm font-medium text-purple-600 hover:text-purple-500">Lihat semua →</a>
             </div>
         </div>
 
@@ -95,55 +95,86 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="truncate text-sm font-medium text-gray-500">Total Registrations</dt>
+                            <dt class="truncate text-sm font-medium text-gray-500">Total Pendaftaran</dt>
                             <dd class="text-3xl font-semibold text-gray-900">{{ $totalRegistrations }}</dd>
                         </dl>
                     </div>
                 </div>
             </div>
             <div class="bg-gray-50 px-5 py-3">
-                <a href="{{ route('registrations.index') }}" class="text-sm font-medium text-orange-600 hover:text-orange-500">View all →</a>
+                <a href="{{ route('registrations.index') }}" class="text-sm font-medium text-orange-600 hover:text-orange-500">Lihat semua →</a>
             </div>
         </div>
     </div>
 
     <!-- Quick Actions -->
     <div class="rounded-lg bg-white shadow p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Aksi Cepat</h2>
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <a href="{{ route('events.create') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition">
-                + New Event
+            <a href="{{ route('events.create') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition text-center">
+                + Pertandingan Baru
             </a>
-            <a href="{{ route('dojangs.create') }}" class="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-500 transition">
-                + New Dojang
+            <a href="{{ route('dojangs.create') }}" class="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-green-500 transition text-center">
+                + Dojang Baru
             </a>
-            <a href="{{ route('participants.create') }}" class="inline-flex items-center justify-center rounded-md bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 transition">
-                + New Participant
+            <a href="{{ route('participants.create') }}" class="inline-flex items-center justify-center rounded-md bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 transition text-center">
+                + Peserta Baru
             </a>
-            <a href="{{ route('registrations.create') }}" class="inline-flex items-center justify-center rounded-md bg-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 transition">
-                + New Registration
+            <a href="{{ route('registrations.create') }}" class="inline-flex items-center justify-center rounded-md bg-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 transition text-center">
+                + Pendaftaran Baru
             </a>
         </div>
+    </div>
+
+    <!-- Event Filter -->
+    <div class="rounded-lg bg-white shadow p-6">
+        <form action="{{ route('dashboard') }}" method="GET" class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <div class="flex-1">
+                <label for="event_id" class="block text-sm font-medium text-gray-700 mb-1">Pilih Pertandingan</label>
+                <select name="event_id" id="event_id" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" onchange="this.form.submit()">
+                    @foreach($events as $event)
+                        <option value="{{ $event->id }}" {{ $activeEventId == $event->id ? 'selected' : '' }}>
+                            {{ $event->name }} ({{ $event->start_date->format('Y') }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex-shrink-0 pt-0 sm:pt-6">
+                <button type="submit" class="w-full inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <svg class="mr-2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filter
+                </button>
+            </div>
+        </form>
     </div>
 
     <!-- Medal Standings (if there are events) -->
     @if($medalStandings->isNotEmpty())
     <div class="rounded-lg bg-white shadow">
         <div class="px-6 py-5 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-gray-900">🏆 Medal Standings</h2>
-                <span class="text-xs text-gray-500">* Only medals from <strong>Prestasi</strong> categories are counted</span>
+            <div class="sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">
+                        🏆 Klasemen Medali
+                        @if($activeEvent)
+                            <span class="ml-1 text-blue-600">— {{ $activeEvent->name }}</span>
+                        @endif
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500">* Hanya medali dari kategori <strong>Prestasi</strong> yang dihitung</p>
+                </div>
             </div>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contingent</th>
-                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🥇 Gold</th>
-                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🥈 Silver</th>
-                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🥉 Bronze</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peringkat</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kontingen</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🥇 Emas</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🥈 Perak</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">🥉 Perunggu</th>
                         <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                     </tr>
                 </thead>
@@ -161,6 +192,22 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    @else
+    <div class="rounded-lg bg-white shadow p-12 text-center border-2 border-dashed border-gray-200">
+        <div class="mx-auto h-12 w-12 text-gray-400 mb-4">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="h-12 w-12 text-gray-300">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+        </div>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada medali</h3>
+        <p class="mt-1 text-sm text-gray-500">
+            @if($activeEvent)
+                Belum ada perolehan medali untuk pertandingan <strong>{{ $activeEvent->name }}</strong>.
+            @else
+                Pilih pertandingan untuk melihat klasemen.
+            @endif
+        </p>
     </div>
     @endif
 </div>

@@ -57,7 +57,7 @@ class RegistrationController extends Controller
                     ->count();
 
                 if ($count >= $limit) {
-                    return back()->withErrors(['medal_id' => "Medal limit reached for '{$medal->name}' in this Prestasi category (Max: {$limit})"])->withInput();
+                    return back()->withErrors(['medal_id' => "Batas perolehan medali tercapai. Untuk kategori Prestasi, hanya diperbolehkan: 1 Emas, 1 Perak, dan 2 Perunggu."])->withInput();
                 }
             }
         }
@@ -117,7 +117,7 @@ class RegistrationController extends Controller
                     ->count();
 
                 if ($count >= $limit) {
-                    return back()->withErrors(['medal_id' => "Medal limit reached for '{$medal->name}' in this Prestasi category (Max: {$limit})"])->withInput();
+                    return back()->withErrors(['medal_id' => "Batas perolehan medali tercapai. Untuk kategori Prestasi, hanya diperbolehkan: 1 Emas, 1 Perak, dan 2 Perunggu."])->withInput();
                 }
             }
         }

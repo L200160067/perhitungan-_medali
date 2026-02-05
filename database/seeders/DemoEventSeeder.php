@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Enums\PoomsaeType;
 use App\Enums\TournamentGender;
-use App\Enums\TournamentType;
 use App\Models\Event;
 use App\Models\TournamentCategory;
 use Illuminate\Database\Seeder;
@@ -14,36 +13,47 @@ class DemoEventSeeder extends Seeder
     public function run(): void
     {
         $event = Event::factory()->create([
+            'name' => 'Kejuaraan Taekwondo Nasional - Piala Menpora',
             'start_date' => now()->addWeeks(2)->toDateString(),
             'end_date' => now()->addWeeks(2)->addDays(2)->toDateString(),
         ]);
 
-        TournamentCategory::factory()->kyourugi()->create([
+        // --- PRESTASI CATEGORIES ---
+        TournamentCategory::factory()->kyourugi()->prestasi()->create([
             'event_id' => $event->id,
-            'name' => 'Junior Kyourugi Under 45kg',
-            'type' => TournamentType::Kyourugi,
+            'name' => 'Kyourugi Junior Putra Under 45kg',
             'gender' => TournamentGender::Male,
-            'age_reference_date' => now()->toDateString(),
             'min_age' => 12,
             'max_age' => 14,
-            'weight_class_name' => 'Under 45.00 kg',
-            'min_weight' => 0,
-            'max_weight' => 45,
-            'poomsae_type' => null,
+            'max_weight' => 45.00,
         ]);
 
-        TournamentCategory::factory()->poomsae()->create([
+        TournamentCategory::factory()->poomsae()->prestasi()->create([
             'event_id' => $event->id,
-            'name' => 'Senior Poomsae Individual',
-            'type' => TournamentType::Poomsae,
-            'gender' => TournamentGender::Mixed,
-            'age_reference_date' => now()->toDateString(),
+            'name' => 'Poomsae Senior Individual Putra',
+            'gender' => TournamentGender::Male,
+            'poomsae_type' => PoomsaeType::Individual,
             'min_age' => 18,
             'max_age' => 35,
+        ]);
+
+        // --- FESTIVAL CATEGORIES ---
+        TournamentCategory::factory()->kyourugi()->festival()->create([
+            'event_id' => $event->id,
+            'name' => 'Kyourugi Pra-Cadet B Putra',
+            'gender' => TournamentGender::Male,
+            'min_age' => 8,
+            'max_age' => 9,
+            'max_weight' => 30.00,
+        ]);
+
+        TournamentCategory::factory()->poomsae()->festival()->create([
+            'event_id' => $event->id,
+            'name' => 'Poomsae Cadet Individual Putri',
+            'gender' => TournamentGender::Female,
             'poomsae_type' => PoomsaeType::Individual,
-            'weight_class_name' => null,
-            'min_weight' => null,
-            'max_weight' => null,
+            'min_age' => 12,
+            'max_age' => 14,
         ]);
     }
 }

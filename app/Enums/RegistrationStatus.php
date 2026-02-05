@@ -11,6 +11,18 @@ enum RegistrationStatus: string
     case Dns = 'dns';
     case Dq = 'dq';
 
+    public function label(): string
+    {
+        return match ($this) {
+            self::Registered => 'Terdaftar',
+            self::PassedWeighIn => 'Lulus Timbang',
+            self::FailedWeighIn => 'Gagal Timbang',
+            self::Competed => 'Bertanding',
+            self::Dns => 'DNS',
+            self::Dq => 'Diskualifikasi',
+        };
+    }
+
     public function color(): string
     {
         return match ($this) {

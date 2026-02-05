@@ -9,6 +9,16 @@ class DojangSeeder extends Seeder
 {
     public function run(): void
     {
-        Dojang::factory()->count(5)->create();
+        $dojangs = [
+            'Satria Muda Taekwondo',
+            'Garuda Academy',
+            'Brawijaya Taekwondo Club',
+            'Dojang Kartika',
+            'Siliwangi Taekwondo Center',
+        ];
+
+        foreach ($dojangs as $name) {
+            Dojang::factory()->create(['name' => $name]);
+        }
     }
 }

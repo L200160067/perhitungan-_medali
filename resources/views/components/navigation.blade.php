@@ -10,28 +10,28 @@
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="{{ url('/') }}" class="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition {{ request()->is('/') ? 'bg-blue-700' : '' }}">
-                            Dashboard
+                            Beranda
                         </a>
                         <a href="{{ route('events.index') }}" class="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition {{ request()->is('events*') ? 'bg-blue-700' : '' }}">
-                            Events
+                            Pertandingan
                         </a>
                         <a href="{{ route('dojangs.index') }}" class="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition {{ request()->is('dojangs*') ? 'bg-blue-700' : '' }}">
-                            Dojangs
+                            Dojang
                         </a>
                         <a href="{{ route('participants.index') }}" class="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition {{ request()->is('participants*') ? 'bg-blue-700' : '' }}">
-                            Participants
+                            Peserta
                         </a>
                         <a href="{{ route('contingents.index') }}" class="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition {{ request()->is('contingents*') ? 'bg-blue-700' : '' }}">
-                            Contingents
+                            Kontingen
                         </a>
                         <a href="{{ route('tournament-categories.index') }}" class="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition {{ request()->is('tournament-categories*') ? 'bg-blue-700' : '' }}">
-                            Categories
+                            Kategori
                         </a>
                         <a href="{{ route('registrations.index') }}" class="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition {{ request()->is('registrations*') ? 'bg-blue-700' : '' }}">
-                            Registrations
+                            Pendaftaran
                         </a>
                         <a href="{{ route('medals.index') }}" class="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition {{ request()->is('medals*') ? 'bg-blue-700' : '' }}">
-                            Medals
+                            Medali
                         </a>
                     </div>
                 </div>

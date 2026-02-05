@@ -14,6 +14,7 @@ class Event extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'name',
         'start_date',
         'end_date',
         'gold_point',

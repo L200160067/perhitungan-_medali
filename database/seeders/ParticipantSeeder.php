@@ -15,22 +15,31 @@ class ParticipantSeeder extends Seeder
             $dojangs = Dojang::factory()->count(5)->create();
         }
 
+        $maleNames = ['Budi Santoso', 'Agus Prayogo', 'Eko Wijaya', 'Iwan Setiawan', 'Hadi Kusuma', 'Rian Hidayat', 'Dedi Kurniawan', 'Fajar Pratama', 'Bambang Sudjatmiko', 'Taufik Hidayat'];
+        $femaleNames = ['Siti Aminah', 'Dewi Lestari', 'Ani Wijaya', 'Sri Wahyuni', 'Indah Permata', 'Putri Utami', 'Rina Marlina', 'Maya Safitri', 'Lani Cahyani', 'Dian Sastro'];
+
         foreach ($dojangs as $dojang) {
-            $count = random_int(8, 20);
-            $maleCount = (int) floor($count / 2);
-            $femaleCount = $count - $maleCount;
+            $countPerGender = 5;
 
-            Participant::factory()
-                ->count($maleCount)
-                ->gender('M')
-                ->ageBetween(10, 25)
-                ->create(['dojang_id' => $dojang->id]);
+            foreach (array_slice($maleNames, 0, $countPerGender) as $name) {
+                Participant::factory()
+                    ->gender('M')
+                    ->ageBetween(10, 25)
+                    ->create([
+                        'dojang_id' => $dojang->id,
+                        'name' => $name,
+                    ]);
+            }
 
-            Participant::factory()
-                ->count($femaleCount)
-                ->gender('F')
-                ->ageBetween(10, 25)
-                ->create(['dojang_id' => $dojang->id]);
+            foreach (array_slice($femaleNames, 0, $countPerGender) as $name) {
+                Participant::factory()
+                    ->gender('F')
+                    ->ageBetween(10, 25)
+                    ->create([
+                        'dojang_id' => $dojang->id,
+                        'name' => $name,
+                    ]);
+            }
         }
     }
 }
