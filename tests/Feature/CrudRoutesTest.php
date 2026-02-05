@@ -43,6 +43,7 @@ it('crud participants', function () {
 
 it('crud events', function () {
     $create = $this->postJson('/events', [
+        'name' => 'Test Event',
         'start_date' => '2026-03-01',
         'end_date' => '2026-03-03',
     ]);

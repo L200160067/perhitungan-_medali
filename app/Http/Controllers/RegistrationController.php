@@ -3,17 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Enums\RegistrationStatus;
+use App\Http\Requests\StoreRegistrationRequest;
+use App\Http\Requests\UpdateRegistrationRequest;
 use App\Models\Contingent;
 use App\Models\Medal;
 use App\Models\Participant;
 use App\Models\Registration;
 use App\Models\TournamentCategory;
+use App\Services\RegistrationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Validation\Rule;
 
 class RegistrationController extends Controller
 {
+    public function __construct(
+        protected RegistrationService $registrationService
+    ) {}
+
     public function index()
     {
         $perPage = request('per_page', 25);
@@ -92,40 +98,9 @@ class RegistrationController extends Controller
         return view('registrations.create', compact('categories', 'participants', 'contingents', 'medals', 'statuses'));
     }
 
-    public function store(Request $request)
+    public function store(StoreRegistrationRequest $request)
     {
-        $data = $request->validate($this->rules());
-
-        $category = TournamentCategory::find($data['category_id']);
-        $contingent = Contingent::find($data['contingent_id']);
-
-        if ($category && $contingent && $category->event_id !== $contingent->event_id) {
-            return back()->withErrors(['category_id' => 'Kategori dan Kontingen harus berasal dari pertandingan yang sama.'])->withInput();
-        }
-
-        // Check medal limits for Prestasi
-        if (isset($data['medal_id']) && $data['medal_id']) {
-            $category = TournamentCategory::find($data['category_id']);
-            if ($category && $category->isPrestasi()) {
-                $medal = Medal::find($data['medal_id']);
-                $limit = match ($medal?->name) {
-                    'gold' => 1,
-                    'silver' => 1,
-                    'bronze' => 2,
-                    default => 0
-                };
-
-                $count = Registration::where('category_id', $category->id)
-                    ->where('medal_id', $medal->id)
-                    ->count();
-
-                if ($count >= $limit) {
-                    return back()->withErrors(['medal_id' => "Batas perolehan medali tercapai. Untuk kategori Prestasi, hanya diperbolehkan: 1 Emas, 1 Perak, dan 2 Perunggu."])->withInput();
-                }
-            }
-        }
-
-        $registration = Registration::query()->create($data);
+        $registration = $this->registrationService->create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($registration, Response::HTTP_CREATED);
@@ -156,46 +131,9 @@ class RegistrationController extends Controller
         return view('registrations.edit', compact('registration', 'categories', 'participants', 'contingents', 'medals', 'statuses'));
     }
 
-    public function update(Request $request, Registration $registration)
+    public function update(UpdateRegistrationRequest $request, Registration $registration)
     {
-        $data = $request->validate($this->rules(true));
-
-        $categoryId = $data['category_id'] ?? $registration->category_id;
-        $contingentId = $data['contingent_id'] ?? $registration->contingent_id;
-
-        $category = TournamentCategory::find($categoryId);
-        $contingent = Contingent::find($contingentId);
-
-        if ($category && $contingent && $category->event_id !== $contingent->event_id) {
-            return back()->withErrors(['category_id' => 'Kategori dan Kontingen harus berasal dari pertandingan yang sama.'])->withInput();
-        }
-
-        // Check medal limits for Prestasi
-        if (isset($data['medal_id']) && $data['medal_id']) {
-            $categoryId = $data['category_id'] ?? $registration->category_id;
-            $category = TournamentCategory::find($categoryId);
-
-            if ($category && $category->isPrestasi()) {
-                $medal = Medal::find($data['medal_id']);
-                $limit = match ($medal?->name) {
-                    'gold' => 1,
-                    'silver' => 1,
-                    'bronze' => 2,
-                    default => 0
-                };
-
-                $count = Registration::where('category_id', $category->id)
-                    ->where('medal_id', $medal->id)
-                    ->where('id', '!=', $registration->id) // Exclude current record
-                    ->count();
-
-                if ($count >= $limit) {
-                    return back()->withErrors(['medal_id' => "Batas perolehan medali tercapai. Untuk kategori Prestasi, hanya diperbolehkan: 1 Emas, 1 Perak, dan 2 Perunggu."])->withInput();
-                }
-            }
-        }
-
-        $registration->update($data);
+        $this->registrationService->update($registration, $request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($registration);
@@ -213,27 +151,5 @@ class RegistrationController extends Controller
         }
 
         return redirect()->route('registrations.index')->with('success', 'Pendaftaran berhasil dihapus!');
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function rules(bool $isUpdate = false): array
-    {
-        $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
-        $presenceRules = $isUpdate ? ['sometimes'] : ['sometimes'];
-        $statusValues = array_map(fn (RegistrationStatus $status) => $status->value, RegistrationStatus::cases());
-
-        return [
-            'category_id' => $prefix.'integer|exists:tournament_categories,id',
-            'participant_id' => $prefix.'integer|exists:participants,id',
-            'contingent_id' => $prefix.'integer|exists:contingents,id',
-            'medal_id' => $isUpdate ? 'sometimes|nullable|integer|exists:medals,id' : 'nullable|integer|exists:medals,id',
-            'status' => [
-                ...$presenceRules,
-                'string',
-                Rule::in($statusValues),
-            ],
-        ];
     }
 }

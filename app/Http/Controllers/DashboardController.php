@@ -2,69 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contingent;
-use App\Models\Dojang;
-use App\Models\Event;
-use App\Models\Medal;
-use App\Models\Participant;
-use App\Models\Registration;
-use Illuminate\Support\Facades\DB;
+use App\Services\DashboardService;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
-    {
-        $totalEvents = Event::count();
-        $totalDojangs = Dojang::count();
-        $totalParticipants = Participant::count();
-        $totalRegistrations = Registration::count();
+    public function __construct(
+        protected DashboardService $dashboardService
+    ) {}
 
-        // Get all events for the filter dropdown
-        $events = Event::orderByDesc('start_date')->get();
+    public function index(Request $request)
+    {
+        $stats = $this->dashboardService->getStats();
+        $events = $this->dashboardService->getEvents();
 
         // Determine active event ID (from request or the most recent one)
-        $activeEventId = request('event_id');
+        $activeEventId = $request->input('event_id');
         if (!$activeEventId && $events->isNotEmpty()) {
             $activeEventId = $events->first()->id;
         }
 
         $activeEvent = $events->find($activeEventId);
+        $medalStandings = $this->dashboardService->getMedalStandings($activeEventId);
 
-        // Medal standings - group by contingent (ONLY Prestasi categories count)
-        $medalStandings = Contingent::query()
-            ->select('contingents.*')
-            ->selectRaw('
-                SUM(CASE WHEN medals.name = "gold" THEN 1 ELSE 0 END) as gold_count,
-                SUM(CASE WHEN medals.name = "silver" THEN 1 ELSE 0 END) as silver_count,
-                SUM(CASE WHEN medals.name = "bronze" THEN 1 ELSE 0 END) as bronze_count,
-                COUNT(registrations.medal_id) as total_medals
-            ')
-            ->leftJoin('registrations', 'contingents.id', '=', 'registrations.contingent_id')
-            ->leftJoin('medals', 'registrations.medal_id', '=', 'medals.id')
-            ->leftJoin('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
-            ->where('tournament_categories.category_type', '=', 'prestasi');
-
-        // Apply event filter
-        if ($activeEventId) {
-            $medalStandings->where('contingents.event_id', $activeEventId);
-        }
-
-        $medalStandings = $medalStandings->groupBy('contingents.id', 'contingents.name', 'contingents.event_id', 'contingents.dojang_id', 'contingents.created_at', 'contingents.updated_at')
-            ->having('total_medals', '>', 0)
-            ->orderByDesc('gold_count')
-            ->orderByDesc('silver_count')
-            ->orderByDesc('bronze_count')
-            ->get();
-
-        return view('dashboard', compact(
-            'totalEvents',
-            'totalDojangs',
-            'totalParticipants',
-            'totalRegistrations',
+        return view('dashboard', array_merge($stats, compact(
             'events',
             'activeEventId',
             'activeEvent',
             'medalStandings'
-        ));
+        )));
     }
 }
