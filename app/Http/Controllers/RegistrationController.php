@@ -38,6 +38,28 @@ class RegistrationController extends Controller
     {
         $data = $request->validate($this->rules());
 
+        // Check medal limits for Prestasi
+        if (isset($data['medal_id']) && $data['medal_id']) {
+            $category = TournamentCategory::find($data['category_id']);
+            if ($category && $category->isPrestasi()) {
+                $medal = Medal::find($data['medal_id']);
+                $limit = match ($medal?->name) {
+                    'gold' => 1,
+                    'silver' => 1,
+                    'bronze' => 2,
+                    default => 0
+                };
+
+                $count = Registration::where('category_id', $category->id)
+                    ->where('medal_id', $medal->id)
+                    ->count();
+
+                if ($count >= $limit) {
+                    return back()->withErrors(['medal_id' => "Medal limit reached for '{$medal->name}' in this Prestasi category (Max: {$limit})"])->withInput();
+                }
+            }
+        }
+
         $registration = Registration::query()->create($data);
 
         if (request()->expectsJson()) {
@@ -72,6 +94,31 @@ class RegistrationController extends Controller
     {
         $data = $request->validate($this->rules(true));
 
+        // Check medal limits for Prestasi
+        if (isset($data['medal_id']) && $data['medal_id']) {
+            $categoryId = $data['category_id'] ?? $registration->category_id;
+            $category = TournamentCategory::find($categoryId);
+
+            if ($category && $category->isPrestasi()) {
+                $medal = Medal::find($data['medal_id']);
+                $limit = match ($medal?->name) {
+                    'gold' => 1,
+                    'silver' => 1,
+                    'bronze' => 2,
+                    default => 0
+                };
+
+                $count = Registration::where('category_id', $category->id)
+                    ->where('medal_id', $medal->id)
+                    ->where('id', '!=', $registration->id) // Exclude current record
+                    ->count();
+
+                if ($count >= $limit) {
+                    return back()->withErrors(['medal_id' => "Medal limit reached for '{$medal->name}' in this Prestasi category (Max: {$limit})"])->withInput();
+                }
+            }
+        }
+
         $registration->update($data);
 
         if (request()->expectsJson()) {
@@ -102,8 +149,8 @@ class RegistrationController extends Controller
         $statusValues = array_map(fn (RegistrationStatus $status) => $status->value, RegistrationStatus::cases());
 
         return [
-            'category_id' => $prefix . 'integer|exists:tournament_categories,id',
-            'contingent_id' => $prefix . 'integer|exists:contingents,id',
+            'category_id' => $prefix.'integer|exists:tournament_categories,id',
+            'contingent_id' => $prefix.'integer|exists:contingents,id',
             'medal_id' => $isUpdate ? 'sometimes|nullable|integer|exists:medals,id' : 'nullable|integer|exists:medals,id',
             'status' => [
                 ...$presenceRules,

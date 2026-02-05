@@ -18,6 +18,11 @@
             <div><dt class="text-sm font-medium text-gray-500">ID</dt><dd class="mt-1 text-sm text-gray-900">{{ $tournamentCategory->id }}</dd></div>
             <div><dt class="text-sm font-medium text-gray-500">Name</dt><dd class="mt-1 text-sm text-gray-900 font-semibold">{{ $tournamentCategory->name }}</dd></div>
             <div><dt class="text-sm font-medium text-gray-500">Type</dt><dd class="mt-1 text-sm text-gray-900">{{ ucfirst($tournamentCategory->type->value) }}</dd></div>
+            <div><dt class="text-sm font-medium text-gray-500">Category Type</dt><dd class="mt-1 text-sm text-gray-900">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $tournamentCategory->category_type->value === 'festival' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800' }}">
+                    {{ ucfirst($tournamentCategory->category_type->value) }}
+                </span>
+            </dd></div>
             <div><dt class="text-sm font-medium text-gray-500">Gender</dt><dd class="mt-1 text-sm text-gray-900">{{ ucfirst($tournamentCategory->gender->value) }}</dd></div>
             <div><dt class="text-sm font-medium text-gray-500">Event</dt><dd class="mt-1 text-sm text-gray-900"><a href="{{ route('events.show', $tournamentCategory->event) }}" class="text-blue-600 hover:text-blue-800">Event #{{ $tournamentCategory->event_id }}</a></dd></div>
         </dl>

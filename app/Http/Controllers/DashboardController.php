@@ -19,7 +19,7 @@ class DashboardController extends Controller
         $totalParticipants = Participant::count();
         $totalRegistrations = Registration::count();
 
-        // Medal standings - group by contingent
+        // Medal standings - group by contingent (ONLY Prestasi categories count)
         $medalStandings = Contingent::query()
             ->select('contingents.*')
             ->selectRaw('
@@ -30,6 +30,8 @@ class DashboardController extends Controller
             ')
             ->leftJoin('registrations', 'contingents.id', '=', 'registrations.contingent_id')
             ->leftJoin('medals', 'registrations.medal_id', '=', 'medals.id')
+            ->leftJoin('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
+            ->where('tournament_categories.category_type', '=', 'prestasi')
             ->groupBy('contingents.id', 'contingents.name', 'contingents.event_id', 'contingents.dojang_id', 'contingents.created_at', 'contingents.updated_at')
             ->having('total_medals', '>', 0)
             ->orderByDesc('gold_count')

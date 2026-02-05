@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CategoryType;
 use App\Enums\PoomsaeType;
 use App\Enums\TournamentGender;
 use App\Enums\TournamentType;
@@ -30,8 +31,9 @@ class TournamentCategoryController extends Controller
         $types = TournamentType::cases();
         $genders = TournamentGender::cases();
         $poomsaeTypes = PoomsaeType::cases();
+        $categoryTypes = CategoryType::cases();
 
-        return view('tournament-categories.create', compact('events', 'types', 'genders', 'poomsaeTypes'));
+        return view('tournament-categories.create', compact('events', 'types', 'genders', 'poomsaeTypes', 'categoryTypes'));
     }
 
     public function store(Request $request)
@@ -64,8 +66,9 @@ class TournamentCategoryController extends Controller
         $types = TournamentType::cases();
         $genders = TournamentGender::cases();
         $poomsaeTypes = PoomsaeType::cases();
+        $categoryTypes = CategoryType::cases();
 
-        return view('tournament-categories.edit', compact('tournamentCategory', 'events', 'types', 'genders', 'poomsaeTypes'));
+        return view('tournament-categories.edit', compact('tournamentCategory', 'events', 'types', 'genders', 'poomsaeTypes', 'categoryTypes'));
     }
 
     public function update(Request $request, TournamentCategory $tournamentCategory)
@@ -103,6 +106,7 @@ class TournamentCategoryController extends Controller
         $typeValues = array_map(fn (TournamentType $type) => $type->value, TournamentType::cases());
         $genderValues = array_map(fn (TournamentGender $gender) => $gender->value, TournamentGender::cases());
         $poomsaeTypeValues = array_map(fn (PoomsaeType $type) => $type->value, PoomsaeType::cases());
+        $categoryTypeValues = array_map(fn (CategoryType $type) => $type->value, CategoryType::cases());
 
         return [
             'event_id' => $prefix . 'integer|exists:events,id',
@@ -112,6 +116,12 @@ class TournamentCategoryController extends Controller
                 'required',
                 'string',
                 Rule::in($typeValues),
+            ],
+            'category_type' => [
+                ...$presenceRules,
+                'required',
+                'string',
+                Rule::in($categoryTypeValues),
             ],
             'gender' => [
                 ...$presenceRules,

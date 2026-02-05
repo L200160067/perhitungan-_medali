@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\CategoryType;
 use App\Enums\PoomsaeType;
 use App\Enums\TournamentGender;
 use App\Enums\TournamentType;
@@ -27,6 +28,7 @@ class TournamentCategoryFactory extends Factory
             'event_id' => Event::factory(),
             'name' => $this->faker->words(2, true),
             'type' => TournamentType::Kyourugi,
+            'category_type' => CategoryType::Prestasi,
             'gender' => $this->faker->randomElement(TournamentGender::cases()),
             'age_reference_date' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'min_age' => $minAge,
@@ -83,6 +85,20 @@ class TournamentCategoryFactory extends Factory
     {
         return $this->state([
             'poomsae_type' => $poomsaeType,
+        ]);
+    }
+
+    public function festival(): static
+    {
+        return $this->state([
+            'category_type' => CategoryType::Festival,
+        ]);
+    }
+
+    public function prestasi(): static
+    {
+        return $this->state([
+            'category_type' => CategoryType::Prestasi,
         ]);
     }
 }

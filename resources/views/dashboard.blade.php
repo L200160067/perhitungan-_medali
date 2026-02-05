@@ -130,7 +130,10 @@
     @if($medalStandings->isNotEmpty())
     <div class="rounded-lg bg-white shadow">
         <div class="px-6 py-5 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">🏆 Medal Standings</h2>
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-900">🏆 Medal Standings</h2>
+                <span class="text-xs text-gray-500">* Only medals from <strong>Prestasi</strong> categories are counted</span>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">

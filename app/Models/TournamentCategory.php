@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CategoryType;
 use App\Enums\PoomsaeType;
 use App\Enums\TournamentGender;
 use App\Enums\TournamentType;
@@ -21,6 +22,7 @@ class TournamentCategory extends Model
         'event_id',
         'name',
         'type',
+        'category_type',
         'gender',
         'age_reference_date',
         'min_age',
@@ -59,8 +61,25 @@ class TournamentCategory extends Model
             'min_weight' => 'decimal:2',
             'max_weight' => 'decimal:2',
             'type' => TournamentType::class,
+            'category_type' => CategoryType::class,
             'gender' => TournamentGender::class,
             'poomsae_type' => PoomsaeType::class,
         ];
+    }
+
+    /**
+     * Check if this category is a Festival category
+     */
+    public function isFestival(): bool
+    {
+        return $this->category_type === CategoryType::Festival;
+    }
+
+    /**
+     * Check if this category is a Prestasi category
+     */
+    public function isPrestasi(): bool
+    {
+        return $this->category_type === CategoryType::Prestasi;
     }
 }

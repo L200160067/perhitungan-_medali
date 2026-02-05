@@ -13,6 +13,23 @@
                 <div><label for="type" class="block text-sm font-medium text-gray-700">Type <span class="text-red-500">*</span></label><select name="type" id="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('type') border-red-500 @enderror" required><option value="">Select type</option>@foreach($types as $type)<option value="{{ $type->value }}" {{ old('type') == $type->value ? 'selected' : '' }}>{{ ucfirst($type->value) }}</option>@endforeach</select>@error('type')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror</div>
                 <div><label for="gender" class="block text-sm font-medium text-gray-700">Gender <span class="text-red-500">*</span></label><select name="gender" id="gender" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('gender') border-red-500 @enderror" required><option value="">Select gender</option>@foreach($genders as $gender)<option value="{{ $gender->value }}" {{ old('gender') == $gender->value ? 'selected' : '' }}>{{ ucfirst($gender->value) }}</option>@endforeach</select>@error('gender')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror</div>
             </div>
+            <div>
+                <label for="category_type" class="block text-sm font-medium text-gray-700">Category Type <span class="text-red-500">*</span></label>
+                <select name="category_type" id="category_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('category_type') border-red-500 @enderror" required>
+                    <option value="">Select category type</option>
+                    @foreach($categoryTypes as $categoryType)
+                        <option value="{{ $categoryType->value }}" {{ old('category_type') == $categoryType->value ? 'selected' : '' }}>
+                            {{ ucfirst($categoryType->value) }}
+                            @if($categoryType->value === 'festival')
+                                (Multiple winners allowed - NOT counted in standings)
+                            @else
+                                (1🥇 1🥈 2🥉 - Counts for medal standings)
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
+                @error('category_type')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+            </div>
             <div><label for="age_reference_date" class="block text-sm font-medium text-gray-700">Age Reference Date</label><input type="date" name="age_reference_date" id="age_reference_date" value="{{ old('age_reference_date') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></div>
             <div class="grid grid-cols-2 gap-4">
                 <div><label for="min_age" class="block text-sm font-medium text-gray-700">Min Age</label><input type="number" name="min_age" id="min_age" value="{{ old('min_age') }}" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></div>

@@ -10,7 +10,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TournamentCategoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [DashboardController::class, 'index']);
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::resources([
     'dojangs' => DojangController::class,
