@@ -10,7 +10,18 @@ class EventController extends Controller
 {
     public function index()
     {
-        return response()->json(Event::query()->get());
+        $events = Event::query()->get();
+
+        if (request()->expectsJson()) {
+            return response()->json($events);
+        }
+
+        return view('events.index', compact('events'));
+    }
+
+    public function create()
+    {
+        return view('events.create');
     }
 
     public function store(Request $request)
@@ -19,12 +30,25 @@ class EventController extends Controller
 
         $event = Event::query()->create($data);
 
-        return response()->json($event, Response::HTTP_CREATED);
+        if (request()->expectsJson()) {
+            return response()->json($event, Response::HTTP_CREATED);
+        }
+
+        return redirect()->route('events.index')->with('success', 'Event created successfully!');
     }
 
     public function show(Event $event)
     {
-        return response()->json($event);
+        if (request()->expectsJson()) {
+            return response()->json($event);
+        }
+
+        return view('events.show', compact('event'));
+    }
+
+    public function edit(Event $event)
+    {
+        return view('events.edit', compact('event'));
     }
 
     public function update(Request $request, Event $event)
@@ -33,14 +57,22 @@ class EventController extends Controller
 
         $event->update($data);
 
-        return response()->json($event);
+        if (request()->expectsJson()) {
+            return response()->json($event);
+        }
+
+        return redirect()->route('events.index')->with('success', 'Event updated successfully!');
     }
 
     public function destroy(Event $event)
     {
         $event->delete();
 
-        return response()->noContent();
+        if (request()->expectsJson()) {
+            return response()->noContent();
+        }
+
+        return redirect()->route('events.index')->with('success', 'Event deleted successfully!');
     }
 
     /**

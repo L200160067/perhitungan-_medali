@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\RegistrationStatus;
+use App\Models\Contingent;
+use App\Models\Medal;
 use App\Models\Registration;
+use App\Models\TournamentCategory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
@@ -12,7 +15,23 @@ class RegistrationController extends Controller
 {
     public function index()
     {
-        return response()->json(Registration::query()->get());
+        $registrations = Registration::query()->with(['category', 'contingent', 'medal'])->get();
+
+        if (request()->expectsJson()) {
+            return response()->json($registrations);
+        }
+
+        return view('registrations.index', compact('registrations'));
+    }
+
+    public function create()
+    {
+        $categories = TournamentCategory::all();
+        $contingents = Contingent::all();
+        $medals = Medal::all();
+        $statuses = RegistrationStatus::cases();
+
+        return view('registrations.create', compact('categories', 'contingents', 'medals', 'statuses'));
     }
 
     public function store(Request $request)
@@ -21,12 +40,32 @@ class RegistrationController extends Controller
 
         $registration = Registration::query()->create($data);
 
-        return response()->json($registration, Response::HTTP_CREATED);
+        if (request()->expectsJson()) {
+            return response()->json($registration, Response::HTTP_CREATED);
+        }
+
+        return redirect()->route('registrations.index')->with('success', 'Registration created successfully!');
     }
 
     public function show(Registration $registration)
     {
-        return response()->json($registration);
+        $registration->load(['category', 'contingent', 'medal']);
+
+        if (request()->expectsJson()) {
+            return response()->json($registration);
+        }
+
+        return view('registrations.show', compact('registration'));
+    }
+
+    public function edit(Registration $registration)
+    {
+        $categories = TournamentCategory::all();
+        $contingents = Contingent::all();
+        $medals = Medal::all();
+        $statuses = RegistrationStatus::cases();
+
+        return view('registrations.edit', compact('registration', 'categories', 'contingents', 'medals', 'statuses'));
     }
 
     public function update(Request $request, Registration $registration)
@@ -35,14 +74,22 @@ class RegistrationController extends Controller
 
         $registration->update($data);
 
-        return response()->json($registration);
+        if (request()->expectsJson()) {
+            return response()->json($registration);
+        }
+
+        return redirect()->route('registrations.index')->with('success', 'Registration updated successfully!');
     }
 
     public function destroy(Registration $registration)
     {
         $registration->delete();
 
-        return response()->noContent();
+        if (request()->expectsJson()) {
+            return response()->noContent();
+        }
+
+        return redirect()->route('registrations.index')->with('success', 'Registration deleted successfully!');
     }
 
     /**

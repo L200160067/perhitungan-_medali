@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContingentController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DojangController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\MedalController;
@@ -9,9 +10,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TournamentCategoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [DashboardController::class, 'index']);
 
 Route::resources([
     'dojangs' => DojangController::class,

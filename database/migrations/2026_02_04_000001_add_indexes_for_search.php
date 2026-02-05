@@ -19,7 +19,6 @@ return new class extends Migration
             $table->index('name', 'participants_name_idx');
             $table->index('gender', 'participants_gender_idx');
             $table->index('birth_date', 'participants_birth_date_idx');
-            $table->index(['gender', 'name'], 'participants_gender_name_idx');
         });
 
         Schema::table('events', function (Blueprint $table) {
@@ -35,12 +34,10 @@ return new class extends Migration
             $table->index('name', 'tournament_categories_name_idx');
             $table->index('type', 'tournament_categories_type_idx');
             $table->index('gender', 'tournament_categories_gender_idx');
-            $table->index(['type', 'gender'], 'tournament_categories_type_gender_idx');
         });
 
         Schema::table('registrations', function (Blueprint $table) {
             $table->index('status', 'registrations_status_idx');
-            $table->index(['category_id', 'status'], 'registrations_category_status_idx');
         });
     }
 
@@ -57,7 +54,6 @@ return new class extends Migration
             $table->dropIndex('participants_name_idx');
             $table->dropIndex('participants_gender_idx');
             $table->dropIndex('participants_birth_date_idx');
-            $table->dropIndex('participants_gender_name_idx');
         });
 
         Schema::table('events', function (Blueprint $table) {
@@ -73,12 +69,10 @@ return new class extends Migration
             $table->dropIndex('tournament_categories_name_idx');
             $table->dropIndex('tournament_categories_type_idx');
             $table->dropIndex('tournament_categories_gender_idx');
-            $table->dropIndex('tournament_categories_type_gender_idx');
         });
 
         Schema::table('registrations', function (Blueprint $table) {
             $table->dropIndex('registrations_status_idx');
-            $table->dropIndex('registrations_category_status_idx');
         });
     }
 };

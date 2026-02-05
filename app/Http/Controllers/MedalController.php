@@ -5,13 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Medal;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Validation\Rule;
 
 class MedalController extends Controller
 {
     public function index()
     {
-        return response()->json(Medal::query()->get());
+        $medals = Medal::query()->orderBy('rank')->get();
+
+        if (request()->expectsJson()) {
+            return response()->json($medals);
+        }
+
+        return view('medals.index', compact('medals'));
+    }
+
+    public function create()
+    {
+        return view('medals.create');
     }
 
     public function store(Request $request)
@@ -20,49 +30,61 @@ class MedalController extends Controller
 
         $medal = Medal::query()->create($data);
 
-        return response()->json($medal, Response::HTTP_CREATED);
+        if (request()->expectsJson()) {
+            return response()->json($medal, Response::HTTP_CREATED);
+        }
+
+        return redirect()->route('medals.index')->with('success', 'Medal created successfully!');
     }
 
     public function show(Medal $medal)
     {
-        return response()->json($medal);
+        if (request()->expectsJson()) {
+            return response()->json($medal);
+        }
+
+        return redirect()->route('medals.index');
+    }
+
+    public function edit(Medal $medal)
+    {
+        return view('medals.edit', compact('medal'));
     }
 
     public function update(Request $request, Medal $medal)
     {
-        $data = $request->validate($this->rules(true, $medal));
+        $data = $request->validate($this->rules(true));
 
         $medal->update($data);
 
-        return response()->json($medal);
+        if (request()->expectsJson()) {
+            return response()->json($medal);
+        }
+
+        return redirect()->route('medals.index')->with('success', 'Medal updated successfully!');
     }
 
     public function destroy(Medal $medal)
     {
         $medal->delete();
 
-        return response()->noContent();
+        if (request()->expectsJson()) {
+            return response()->noContent();
+        }
+
+        return redirect()->route('medals.index')->with('success', 'Medal deleted successfully!');
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, string>
      */
-    private function rules(bool $isUpdate = false, ?Medal $medal = null): array
+    private function rules(bool $isUpdate = false): array
     {
-        $presenceRules = $isUpdate ? ['sometimes', 'required'] : ['required'];
-        $nameRule = Rule::unique('medals', 'name');
-        if ($medal) {
-            $nameRule = $nameRule->ignore($medal->id);
-        }
+        $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
 
         return [
-            'name' => [
-                ...$presenceRules,
-                'string',
-                'max:255',
-                $nameRule,
-            ],
-            'rank' => ($isUpdate ? 'sometimes|required|' : 'required|') . 'integer|min:1',
+            'name' => $prefix . 'string|max:255',
+            'rank' => $prefix . 'integer|min:1',
         ];
     }
 }

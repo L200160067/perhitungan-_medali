@@ -10,7 +10,18 @@ class DojangController extends Controller
 {
     public function index()
     {
-        return response()->json(Dojang::query()->get());
+        $dojangs = Dojang::query()->withCount(['participants', 'contingents'])->get();
+
+        if (request()->expectsJson()) {
+            return response()->json($dojangs);
+        }
+
+        return view('dojangs.index', compact('dojangs'));
+    }
+
+    public function create()
+    {
+        return view('dojangs.create');
     }
 
     public function store(Request $request)
@@ -19,12 +30,27 @@ class DojangController extends Controller
 
         $dojang = Dojang::query()->create($data);
 
-        return response()->json($dojang, Response::HTTP_CREATED);
+        if (request()->expectsJson()) {
+            return response()->json($dojang, Response::HTTP_CREATED);
+        }
+
+        return redirect()->route('dojangs.index')->with('success', 'Dojang created successfully!');
     }
 
     public function show(Dojang $dojang)
     {
-        return response()->json($dojang);
+        $dojang->load(['participants', 'contingents.event']);
+
+        if (request()->expectsJson()) {
+            return response()->json($dojang);
+        }
+
+        return view('dojangs.show', compact('dojang'));
+    }
+
+    public function edit(Dojang $dojang)
+    {
+        return view('dojangs.edit', compact('dojang'));
     }
 
     public function update(Request $request, Dojang $dojang)
@@ -33,14 +59,22 @@ class DojangController extends Controller
 
         $dojang->update($data);
 
-        return response()->json($dojang);
+        if (request()->expectsJson()) {
+            return response()->json($dojang);
+        }
+
+        return redirect()->route('dojangs.index')->with('success', 'Dojang updated successfully!');
     }
 
     public function destroy(Dojang $dojang)
     {
         $dojang->delete();
 
-        return response()->noContent();
+        if (request()->expectsJson()) {
+            return response()->noContent();
+        }
+
+        return redirect()->route('dojangs.index')->with('success', 'Dojang deleted successfully!');
     }
 
     /**

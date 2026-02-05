@@ -12,7 +12,21 @@ class ParticipantController extends Controller
 {
     public function index()
     {
-        return response()->json(Participant::query()->get());
+        $participants = Participant::query()->with('dojang')->get();
+
+        if (request()->expectsJson()) {
+            return response()->json($participants);
+        }
+
+        return view('participants.index', compact('participants'));
+    }
+
+    public function create()
+    {
+        $dojangs = \App\Models\Dojang::all();
+        $genders = ParticipantGender::cases();
+
+        return view('participants.create', compact('dojangs', 'genders'));
     }
 
     public function store(Request $request)
@@ -21,12 +35,30 @@ class ParticipantController extends Controller
 
         $participant = Participant::query()->create($data);
 
-        return response()->json($participant, Response::HTTP_CREATED);
+        if (request()->expectsJson()) {
+            return response()->json($participant, Response::HTTP_CREATED);
+        }
+
+        return redirect()->route('participants.index')->with('success', 'Participant created successfully!');
     }
 
     public function show(Participant $participant)
     {
-        return response()->json($participant);
+        $participant->load('dojang');
+
+        if (request()->expectsJson()) {
+            return response()->json($participant);
+        }
+
+        return view('participants.show', compact('participant'));
+    }
+
+    public function edit(Participant $participant)
+    {
+        $dojangs = \App\Models\Dojang::all();
+        $genders = ParticipantGender::cases();
+
+        return view('participants.edit', compact('participant', 'dojangs', 'genders'));
     }
 
     public function update(Request $request, Participant $participant)
@@ -35,14 +67,22 @@ class ParticipantController extends Controller
 
         $participant->update($data);
 
-        return response()->json($participant);
+        if (request()->expectsJson()) {
+            return response()->json($participant);
+        }
+
+        return redirect()->route('participants.index')->with('success', 'Participant updated successfully!');
     }
 
     public function destroy(Participant $participant)
     {
         $participant->delete();
 
-        return response()->noContent();
+        if (request()->expectsJson()) {
+            return response()->noContent();
+        }
+
+        return redirect()->route('participants.index')->with('success', 'Participant deleted successfully!');
     }
 
     /**
