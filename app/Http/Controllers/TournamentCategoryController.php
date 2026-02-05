@@ -19,8 +19,19 @@ class TournamentCategoryController extends Controller
         $perPage = request('per_page', 25);
         $sort = request('sort', 'name');
         $direction = request('direction', 'asc');
+        $search = request('search');
 
         $query = TournamentCategory::query()->with('event');
+
+        // Searching
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhereHas('event', function ($eq) use ($search) {
+                        $eq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
 
         // Sorting
         if ($sort === 'event') {
@@ -37,7 +48,7 @@ class TournamentCategoryController extends Controller
             return response()->json($tournamentCategories);
         }
 
-        return view('tournament-categories.index', compact('tournamentCategories', 'sort', 'direction', 'perPage'));
+        return view('tournament-categories.index', compact('tournamentCategories', 'sort', 'direction', 'perPage', 'search'));
     }
 
     public function create()

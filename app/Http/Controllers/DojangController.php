@@ -13,8 +13,13 @@ class DojangController extends Controller
         $perPage = request('per_page', 25);
         $sort = request('sort', 'name');
         $direction = request('direction', 'asc');
+        $search = request('search');
 
         $query = Dojang::query()->withCount(['participants', 'contingents']);
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
 
         $query->orderBy($sort, $direction);
 
@@ -24,7 +29,7 @@ class DojangController extends Controller
             return response()->json($dojangs);
         }
 
-        return view('dojangs.index', compact('dojangs', 'sort', 'direction', 'perPage'));
+        return view('dojangs.index', compact('dojangs', 'sort', 'direction', 'perPage', 'search'));
     }
 
     public function create()

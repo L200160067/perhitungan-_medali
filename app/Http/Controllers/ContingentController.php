@@ -15,8 +15,22 @@ class ContingentController extends Controller
         $perPage = request('per_page', 25);
         $sort = request('sort', 'name');
         $direction = request('direction', 'asc');
+        $search = request('search');
 
         $query = Contingent::query()->with(['event', 'dojang']);
+
+        // Searching
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhereHas('event', function ($eq) use ($search) {
+                        $eq->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('dojang', function ($dq) use ($search) {
+                        $dq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
 
         // Sorting
         if ($sort === 'event') {
@@ -37,7 +51,7 @@ class ContingentController extends Controller
             return response()->json($contingents);
         }
 
-        return view('contingents.index', compact('contingents', 'sort', 'direction', 'perPage'));
+        return view('contingents.index', compact('contingents', 'sort', 'direction', 'perPage', 'search'));
     }
 
     public function create()

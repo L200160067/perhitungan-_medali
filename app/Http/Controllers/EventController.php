@@ -13,8 +13,15 @@ class EventController extends Controller
         $perPage = request('per_page', 25);
         $sort = request('sort', 'start_date');
         $direction = request('direction', 'desc');
+        $search = request('search');
 
-        $query = Event::query()->orderBy($sort, $direction);
+        $query = Event::query();
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $query->orderBy($sort, $direction);
 
         $events = $query->paginate($perPage)->withQueryString();
 
@@ -22,7 +29,7 @@ class EventController extends Controller
             return response()->json($events);
         }
 
-        return view('events.index', compact('events', 'sort', 'direction', 'perPage'));
+        return view('events.index', compact('events', 'sort', 'direction', 'perPage', 'search'));
     }
 
     public function create()

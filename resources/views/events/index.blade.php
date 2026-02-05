@@ -4,9 +4,32 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="flex justify-between items-center">
-        <p class="text-gray-600">Kelola pertandingan turnamen</p>
-        <a href="{{ route('events.create') }}" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">+ Tambah Pertandingan Baru</a>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <p class="text-gray-600">Kelola pertandingan turnamen</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <form action="{{ route('events.index') }}" method="GET" class="relative flex-1 sm:min-w-[300px]">
+                @if($perPage != 25) <input type="hidden" name="per_page" value="{{ $perPage }}"> @endif
+                @if($sort != 'start_date') <input type="hidden" name="sort" value="{{ $sort }}"> @endif
+                @if($direction != 'desc') <input type="hidden" name="direction" value="{{ $direction }}"> @endif
+                
+                <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama pertandingan..." 
+                    class="w-full rounded-md border-gray-300 pl-10 pr-10 text-sm focus:border-blue-500 focus:ring-blue-500 transition-shadow hover:shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                @if($search)
+                    <a href="{{ route('events.index', array_filter(['per_page' => $perPage, 'sort' => $sort, 'direction' => $direction])) }}" 
+                       class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                    </a>
+                @endif
+            </form>
+            <a href="{{ route('events.create') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition">+ Baru</a>
+        </div>
     </div>
 
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
@@ -15,7 +38,7 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase text-nowrap">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                             Nama
                             <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'name' ? 'visible' : 'invisible group-hover:visible' }}">
                                 @if($sort === 'name')
@@ -31,7 +54,7 @@
                         </a>
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase text-nowrap">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'start_date', 'direction' => $sort === 'start_date' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'start_date', 'direction' => $sort === 'start_date' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                             Tanggal Mulai
                             <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'start_date' ? 'visible' : 'invisible group-hover:visible' }}">
                                 @if($sort === 'start_date')
@@ -47,7 +70,7 @@
                         </a>
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase text-nowrap">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'end_date', 'direction' => $sort === 'end_date' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'end_date', 'direction' => $sort === 'end_date' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                             Tanggal Selesai
                             <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'end_date' ? 'visible' : 'invisible group-hover:visible' }}">
                                 @if($sort === 'end_date')
@@ -113,7 +136,7 @@
                         <label for="per_page" class="text-sm text-gray-500">Baris:</label>
                         <select id="per_page" onchange="window.location.href = this.value" class="rounded-md border-gray-300 py-1 pl-2 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
                             @foreach([25, 50, 100] as $size)
-                                <option value="{{ request()->fullUrlWithQuery(['per_page' => $size, 'page' => 1]) }}" {{ $perPage == $size ? 'selected' : '' }}>{{ $size }}</option>
+                                <option value="{{ request()->fullUrlWithQuery(['search' => $search, 'per_page' => $size, 'page' => 1]) }}" {{ $perPage == $size ? 'selected' : '' }}>{{ $size }}</option>
                             @endforeach
                         </select>
                     </div>

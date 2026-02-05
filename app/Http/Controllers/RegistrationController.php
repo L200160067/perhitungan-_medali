@@ -20,6 +20,7 @@ class RegistrationController extends Controller
         $sort = request('sort', 'created_at');
         $direction = request('direction', 'desc');
         $eventId = request('event_id');
+        $search = request('search');
         
         $events = \App\Models\Event::all();
 
@@ -33,10 +34,27 @@ class RegistrationController extends Controller
             });
         }
 
+        // Searching
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('participant', function ($pq) use ($search) {
+                    $pq->where('name', 'like', "%{$search}%");
+                })->orWhereHas('contingent', function ($cq) use ($search) {
+                    $cq->where('name', 'like', "%{$search}%");
+                })->orWhereHas('category', function ($tq) use ($search) {
+                    $tq->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
         // Sorting
         if ($sort === 'category') {
             $query->join('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
                 ->orderBy('tournament_categories.name', $direction)
+                ->select('registrations.*');
+        } elseif ($sort === 'type') {
+            $query->join('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
+                ->orderBy('tournament_categories.type', $direction)
                 ->select('registrations.*');
         } elseif ($sort === 'participant') {
             $query->join('participants', 'registrations.participant_id', '=', 'participants.id')
@@ -60,7 +78,7 @@ class RegistrationController extends Controller
             return response()->json($registrations);
         }
 
-        return view('registrations.index', compact('registrations', 'events', 'eventId', 'sort', 'direction', 'perPage'));
+        return view('registrations.index', compact('registrations', 'events', 'eventId', 'sort', 'direction', 'perPage', 'search'));
     }
 
     public function create()

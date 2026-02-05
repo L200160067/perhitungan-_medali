@@ -8,7 +8,29 @@
         <div>
             <p class="text-gray-600">Pilih event untuk memperbarui perolehan medali atlet.</p>
         </div>
-        <a href="{{ route('registrations.create') }}" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors duration-200">+ Tambah Pendaftaran Baru</a>
+        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <form action="{{ route('registrations.index') }}" method="GET" class="relative flex-1 sm:min-w-[300px]">
+                @if($eventId) <input type="hidden" name="event_id" value="{{ $eventId }}"> @endif
+                @if($perPage != 25) <input type="hidden" name="per_page" value="{{ $perPage }}"> @endif
+                @if($sort != 'created_at') <input type="hidden" name="sort" value="{{ $sort }}"> @endif
+                @if($direction != 'desc') <input type="hidden" name="direction" value="{{ $direction }}"> @endif
+                
+                <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama peserta, kontingen, atau kategori..." 
+                    class="w-full rounded-md border-gray-300 pl-10 pr-10 text-sm focus:border-blue-500 focus:ring-blue-500 transition-shadow hover:shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                @if($search)
+                    <a href="{{ route('registrations.index', array_filter(['event_id' => $eventId, 'per_page' => $perPage, 'sort' => $sort, 'direction' => $direction])) }}" 
+                       class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                    </a>
+                @endif
+            </form>
+            <a href="{{ route('registrations.create') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors duration-200">+ Baru</a>
+        </div>
     </div>
 
     <!-- Event Selector UI -->
@@ -75,7 +97,7 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'id', 'direction' => $sort === 'id' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'id', 'direction' => $sort === 'id' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                             No
                             <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'id' ? 'visible' : 'invisible group-hover:visible' }}">
                                 @if($sort === 'id')
@@ -91,7 +113,7 @@
                         </a>
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'category', 'direction' => $sort === 'category' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'category', 'direction' => $sort === 'category' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                             Kategori
                             <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'category' ? 'visible' : 'invisible group-hover:visible' }}">
                                 @if($sort === 'category')
@@ -106,9 +128,24 @@
                             </span>
                         </a>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipe</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'participant', 'direction' => $sort === 'participant' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'type', 'direction' => $sort === 'type' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                            Tipe
+                            <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'type' ? 'visible' : 'invisible group-hover:visible' }}">
+                                @if($sort === 'type')
+                                    @if($direction === 'asc')
+                                        <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                                    @else
+                                        <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                    @endif
+                                @else
+                                    <svg class="h-3 w-3 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                @endif
+                            </span>
+                        </a>
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'participant', 'direction' => $sort === 'participant' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                             Peserta
                             <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'participant' ? 'visible' : 'invisible group-hover:visible' }}">
                                 @if($sort === 'participant')
@@ -124,7 +161,7 @@
                         </a>
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'contingent', 'direction' => $sort === 'contingent' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'contingent', 'direction' => $sort === 'contingent' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                             Kontingen
                             <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'contingent' ? 'visible' : 'invisible group-hover:visible' }}">
                                 @if($sort === 'contingent')
@@ -140,7 +177,7 @@
                         </a>
                     </th>
                     <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'status', 'direction' => $sort === 'status' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'status', 'direction' => $sort === 'status' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                             Status
                             <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'status' ? 'visible' : 'invisible group-hover:visible' }}">
                                 @if($sort === 'status')
@@ -156,7 +193,7 @@
                         </a>
                     </th>
                     <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'medal', 'direction' => $sort === 'medal' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
+                        <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'medal', 'direction' => $sort === 'medal' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                             Medali
                             <span class="flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'medal' ? 'visible' : 'invisible group-hover:visible' }}">
                                 @if($sort === 'medal')

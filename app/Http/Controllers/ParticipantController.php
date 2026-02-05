@@ -15,8 +15,19 @@ class ParticipantController extends Controller
         $perPage = request('per_page', 25);
         $sort = request('sort', 'name');
         $direction = request('direction', 'asc');
+        $search = request('search');
 
         $query = Participant::query()->with('dojang');
+
+        // Searching
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhereHas('dojang', function ($dq) use ($search) {
+                        $dq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
 
         // Sorting
         if ($sort === 'dojang') {
@@ -33,7 +44,7 @@ class ParticipantController extends Controller
             return response()->json($participants);
         }
 
-        return view('participants.index', compact('participants', 'sort', 'direction', 'perPage'));
+        return view('participants.index', compact('participants', 'sort', 'direction', 'perPage', 'search'));
     }
 
     public function create()
