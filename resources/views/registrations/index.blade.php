@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', 'Registrations')
-@php $header = 'Registrations'; @endphp
+@section('title', 'Pendaftaran')
+@php $header = 'Pendaftaran'; @endphp
 
 @section('content')
 <div class="space-y-6">

@@ -34,7 +34,7 @@ class MedalController extends Controller
             return response()->json($medal, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('medals.index')->with('success', 'Medal created successfully!');
+        return redirect()->route('medals.index')->with('success', 'Medali berhasil ditambahkan!');
     }
 
     public function show(Medal $medal)
@@ -61,7 +61,7 @@ class MedalController extends Controller
             return response()->json($medal);
         }
 
-        return redirect()->route('medals.index')->with('success', 'Medal updated successfully!');
+        return redirect()->route('medals.index')->with('success', 'Medali berhasil diperbarui!');
     }
 
     public function destroy(Medal $medal)
@@ -72,7 +72,7 @@ class MedalController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('medals.index')->with('success', 'Medal deleted successfully!');
+        return redirect()->route('medals.index')->with('success', 'Medali berhasil dihapus!');
     }
 
     /**
@@ -83,8 +83,8 @@ class MedalController extends Controller
         $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
 
         return [
-            'name' => $prefix . 'string|max:255',
-            'rank' => $prefix . 'integer|min:1',
+            'name' => $prefix.'string|max:255',
+            'rank' => $prefix.'integer|min:1',
         ];
     }
 }

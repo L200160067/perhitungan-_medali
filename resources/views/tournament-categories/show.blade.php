@@ -17,7 +17,7 @@
         <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div><dt class="text-sm font-medium text-gray-500">ID</dt><dd class="mt-1 text-sm text-gray-900">{{ $tournamentCategory->id }}</dd></div>
             <div><dt class="text-sm font-medium text-gray-500">Nama</dt><dd class="mt-1 text-sm text-gray-900 font-semibold">{{ $tournamentCategory->name }}</dd></div>
-            <div><dt class="text-sm font-medium text-gray-500">Jenis</dt><dd class="mt-1 text-sm text-gray-900">{{ ucfirst($tournamentCategory->type->value) }}</dd></div>
+            <div><dt class="text-sm font-medium text-gray-500">Jenis Pertandingan</dt><dd class="mt-1 text-sm text-gray-900">{{ $tournamentCategory->type->label() }}</dd></div>
             <div><dt class="text-sm font-medium text-gray-500">Kategori</dt><dd class="mt-1 text-sm text-gray-900">
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $tournamentCategory->category_type->value === 'festival' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800' }}">
                     {{ $tournamentCategory->category_type->label() }}

@@ -34,7 +34,7 @@ class DojangController extends Controller
             return response()->json($dojang, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('dojangs.index')->with('success', 'Dojang created successfully!');
+        return redirect()->route('dojangs.index')->with('success', 'Dojang berhasil ditambahkan!');
     }
 
     public function show(Dojang $dojang)
@@ -63,7 +63,7 @@ class DojangController extends Controller
             return response()->json($dojang);
         }
 
-        return redirect()->route('dojangs.index')->with('success', 'Dojang updated successfully!');
+        return redirect()->route('dojangs.index')->with('success', 'Dojang berhasil diperbarui!');
     }
 
     public function destroy(Dojang $dojang)
@@ -74,7 +74,7 @@ class DojangController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('dojangs.index')->with('success', 'Dojang deleted successfully!');
+        return redirect()->route('dojangs.index')->with('success', 'Dojang berhasil dihapus!');
     }
 
     /**

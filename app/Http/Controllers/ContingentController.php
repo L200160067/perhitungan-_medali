@@ -39,7 +39,7 @@ class ContingentController extends Controller
             return response()->json($contingent, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('contingents.index')->with('success', 'Contingent created successfully!');
+        return redirect()->route('contingents.index')->with('success', 'Kontingen berhasil ditambahkan!');
     }
 
     public function show(Contingent $contingent)
@@ -71,7 +71,7 @@ class ContingentController extends Controller
             return response()->json($contingent);
         }
 
-        return redirect()->route('contingents.index')->with('success', 'Contingent updated successfully!');
+        return redirect()->route('contingents.index')->with('success', 'Kontingen berhasil diperbarui!');
     }
 
     public function destroy(Contingent $contingent)
@@ -82,7 +82,7 @@ class ContingentController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('contingents.index')->with('success', 'Contingent deleted successfully!');
+        return redirect()->route('contingents.index')->with('success', 'Kontingen berhasil dihapus!');
     }
 
     /**

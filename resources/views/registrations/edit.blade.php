@@ -10,8 +10,12 @@
             <div>
                 <label for="category_id" class="block text-sm font-medium text-gray-700">Kategori Pertandingan <span class="text-red-500">*</span></label>
                 <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('category_id') border-red-500 @enderror" required>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ old('category_id', $registration->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                    @foreach($categories->groupBy('event_id') as $eventId => $eventCategories)
+                        <optgroup label="Pertandingan: {{ $eventCategories->first()->event->name ?? '#' . $eventId }}">
+                            @foreach($eventCategories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id', $registration->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                            @endforeach
+                        </optgroup>
                     @endforeach
                 </select>
                 @error('category_id')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
@@ -28,8 +32,12 @@
             <div>
                 <label for="contingent_id" class="block text-sm font-medium text-gray-700">Kontingen <span class="text-red-500">*</span></label>
                 <select name="contingent_id" id="contingent_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('contingent_id') border-red-500 @enderror" required>
-                    @foreach($contingents as $contingent)
-                        <option value="{{ $contingent->id }}" {{ old('contingent_id', $registration->contingent_id) == $contingent->id ? 'selected' : '' }}>{{ $contingent->name }}</option>
+                    @foreach($contingents->groupBy('event_id') as $eventId => $eventContingents)
+                        <optgroup label="Pertandingan: {{ $eventContingents->first()->event->name ?? '#' . $eventId }}">
+                            @foreach($eventContingents as $contingent)
+                                <option value="{{ $contingent->id }}" {{ old('contingent_id', $registration->contingent_id) == $contingent->id ? 'selected' : '' }}>{{ $contingent->name }}</option>
+                            @endforeach
+                        </optgroup>
                     @endforeach
                 </select>
                 @error('contingent_id')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror

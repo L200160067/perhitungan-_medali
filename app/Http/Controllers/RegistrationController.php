@@ -40,6 +40,13 @@ class RegistrationController extends Controller
     {
         $data = $request->validate($this->rules());
 
+        $category = TournamentCategory::find($data['category_id']);
+        $contingent = Contingent::find($data['contingent_id']);
+
+        if ($category && $contingent && $category->event_id !== $contingent->event_id) {
+            return back()->withErrors(['category_id' => 'Kategori dan Kontingen harus berasal dari pertandingan yang sama.'])->withInput();
+        }
+
         // Check medal limits for Prestasi
         if (isset($data['medal_id']) && $data['medal_id']) {
             $category = TournamentCategory::find($data['category_id']);
@@ -68,7 +75,7 @@ class RegistrationController extends Controller
             return response()->json($registration, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('registrations.index')->with('success', 'Registration created successfully!');
+        return redirect()->route('registrations.index')->with('success', 'Pendaftaran berhasil ditambahkan!');
     }
 
     public function show(Registration $registration)
@@ -96,6 +103,16 @@ class RegistrationController extends Controller
     public function update(Request $request, Registration $registration)
     {
         $data = $request->validate($this->rules(true));
+
+        $categoryId = $data['category_id'] ?? $registration->category_id;
+        $contingentId = $data['contingent_id'] ?? $registration->contingent_id;
+
+        $category = TournamentCategory::find($categoryId);
+        $contingent = Contingent::find($contingentId);
+
+        if ($category && $contingent && $category->event_id !== $contingent->event_id) {
+            return back()->withErrors(['category_id' => 'Kategori dan Kontingen harus berasal dari pertandingan yang sama.'])->withInput();
+        }
 
         // Check medal limits for Prestasi
         if (isset($data['medal_id']) && $data['medal_id']) {
@@ -128,7 +145,7 @@ class RegistrationController extends Controller
             return response()->json($registration);
         }
 
-        return redirect()->route('registrations.index')->with('success', 'Registration updated successfully!');
+        return redirect()->route('registrations.index')->with('success', 'Pendaftaran berhasil diperbarui!');
     }
 
     public function destroy(Registration $registration)
@@ -139,7 +156,7 @@ class RegistrationController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('registrations.index')->with('success', 'Registration deleted successfully!');
+        return redirect()->route('registrations.index')->with('success', 'Pendaftaran berhasil dihapus!');
     }
 
     /**

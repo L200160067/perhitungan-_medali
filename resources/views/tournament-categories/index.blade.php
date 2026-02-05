@@ -27,14 +27,14 @@
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $category->id }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $category->name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $category->type->value === 'kyourugi' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' }}">{{ ucfirst($category->type->value) }}</span></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $category->type->value === 'kyourugi' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' }}">{{ $category->type->label() }}</span></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $category->category_type->value === 'festival' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800' }}">
                             {{ $category->category_type->label() }}
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $category->gender->label() }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><a href="{{ route('events.show', $category->event) }}" class="text-blue-600 hover:text-blue-800">Event #{{ $category->event_id }}</a></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><a href="{{ route('events.show', $category->event) }}" class="text-blue-600 hover:text-blue-800">{{ $category->event->name ?? 'Pertandingan #' . $category->event_id }}</a></td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <a href="{{ route('tournament-categories.show', $category) }}" class="text-blue-600 hover:text-blue-900">Lihat</a>
                         <a href="{{ route('tournament-categories.edit', $category) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>

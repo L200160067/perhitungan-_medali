@@ -84,10 +84,11 @@ class EventController extends Controller
         $pointsPrefix = $isUpdate ? 'sometimes|integer|min:0' : 'sometimes|integer|min:0';
 
         return [
-            'start_date' => $datePrefix . 'date',
+            'name' => 'required|string|max:255',
+            'start_date' => $datePrefix.'date',
             'end_date' => $isUpdate
-                ? $datePrefix . 'date'
-                : $datePrefix . 'date|after_or_equal:start_date',
+                ? $datePrefix.'date'
+                : $datePrefix.'date|after_or_equal:start_date',
             'gold_point' => $pointsPrefix,
             'silver_point' => $pointsPrefix,
             'bronze_point' => $pointsPrefix,

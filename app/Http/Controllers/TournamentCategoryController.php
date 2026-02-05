@@ -46,7 +46,7 @@ class TournamentCategoryController extends Controller
             return response()->json($tournamentCategory, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('tournament-categories.index')->with('success', 'Tournament category created successfully!');
+        return redirect()->route('tournament-categories.index')->with('success', 'Kategori pertandingan berhasil ditambahkan!');
     }
 
     public function show(TournamentCategory $tournamentCategory)
@@ -81,7 +81,7 @@ class TournamentCategoryController extends Controller
             return response()->json($tournamentCategory);
         }
 
-        return redirect()->route('tournament-categories.index')->with('success', 'Tournament category updated successfully!');
+        return redirect()->route('tournament-categories.index')->with('success', 'Kategori pertandingan berhasil diperbarui!');
     }
 
     public function destroy(TournamentCategory $tournamentCategory)
@@ -92,7 +92,7 @@ class TournamentCategoryController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('tournament-categories.index')->with('success', 'Tournament category deleted successfully!');
+        return redirect()->route('tournament-categories.index')->with('success', 'Kategori pertandingan berhasil dihapus!');
     }
 
     /**

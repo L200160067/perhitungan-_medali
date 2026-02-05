@@ -39,7 +39,7 @@ class ParticipantController extends Controller
             return response()->json($participant, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('participants.index')->with('success', 'Participant created successfully!');
+        return redirect()->route('participants.index')->with('success', 'Peserta berhasil ditambahkan!');
     }
 
     public function show(Participant $participant)
@@ -71,7 +71,7 @@ class ParticipantController extends Controller
             return response()->json($participant);
         }
 
-        return redirect()->route('participants.index')->with('success', 'Participant updated successfully!');
+        return redirect()->route('participants.index')->with('success', 'Peserta berhasil diperbarui!');
     }
 
     public function destroy(Participant $participant)
@@ -82,7 +82,7 @@ class ParticipantController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('participants.index')->with('success', 'Participant deleted successfully!');
+        return redirect()->route('participants.index')->with('success', 'Peserta berhasil dihapus!');
     }
 
     /**
