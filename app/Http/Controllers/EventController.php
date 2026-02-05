@@ -10,13 +10,19 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::query()->latest()->get();
+        $perPage = request('per_page', 25);
+        $sort = request('sort', 'start_date');
+        $direction = request('direction', 'desc');
+
+        $query = Event::query()->orderBy($sort, $direction);
+
+        $events = $query->paginate($perPage)->withQueryString();
 
         if (request()->expectsJson()) {
             return response()->json($events);
         }
 
-        return view('events.index', compact('events'));
+        return view('events.index', compact('events', 'sort', 'direction', 'perPage'));
     }
 
     public function create()

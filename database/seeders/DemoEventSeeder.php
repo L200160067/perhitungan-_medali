@@ -12,12 +12,28 @@ class DemoEventSeeder extends Seeder
 {
     public function run(): void
     {
-        $event = Event::factory()->create([
-            'name' => 'Kejuaraan Taekwondo Nasional - Piala Menpora',
-            'start_date' => now()->addWeeks(2)->toDateString(),
-            'end_date' => now()->addWeeks(2)->addDays(2)->toDateString(),
-        ]);
+        $eventNames = [
+            'Kejuaraan Nasional Piala Menpora 2026',
+            'Piala Gubernur Jateng Open',
+            'Taekwondo Championship Jakarta Series',
+            'Piala Walikota Solo',
+            'Kejuaraan Pelajar Se-Indonesia'
+        ];
 
+        foreach ($eventNames as $index => $name) {
+            $event = Event::factory()->create([
+                'name' => $name,
+                'start_date' => now()->addMonths($index)->toDateString(),
+                'end_date' => now()->addMonths($index)->addDays(2)->toDateString(),
+            ]);
+
+            // Create Categories for each event
+            $this->createCategoriesForEvent($event);
+        }
+    }
+
+    private function createCategoriesForEvent(Event $event): void
+    {
         // --- PRESTASI CATEGORIES ---
         TournamentCategory::factory()->kyourugi()->prestasi()->create([
             'event_id' => $event->id,
@@ -26,6 +42,15 @@ class DemoEventSeeder extends Seeder
             'min_age' => 12,
             'max_age' => 14,
             'max_weight' => 45.00,
+        ]);
+
+        TournamentCategory::factory()->kyourugi()->prestasi()->create([
+            'event_id' => $event->id,
+            'name' => 'Kyourugi Junior Putri Under 42kg',
+            'gender' => TournamentGender::Female,
+            'min_age' => 12,
+            'max_age' => 14,
+            'max_weight' => 42.00,
         ]);
 
         TournamentCategory::factory()->poomsae()->prestasi()->create([

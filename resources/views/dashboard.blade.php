@@ -181,8 +181,8 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($medalStandings as $index => $standing)
                     <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $index + 1 }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $standing->name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{{ $index + 1 }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900 font-semibold min-w-[200px]">{{ $standing->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 font-semibold">{{ $standing->gold_count }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 font-semibold">{{ $standing->silver_count }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 font-semibold">{{ $standing->bronze_count }}</td>

@@ -12,13 +12,28 @@ class ParticipantController extends Controller
 {
     public function index()
     {
-        $participants = Participant::query()->with('dojang')->latest()->get();
+        $perPage = request('per_page', 25);
+        $sort = request('sort', 'name');
+        $direction = request('direction', 'asc');
+
+        $query = Participant::query()->with('dojang');
+
+        // Sorting
+        if ($sort === 'dojang') {
+            $query->join('dojangs', 'participants.dojang_id', '=', 'dojangs.id')
+                ->orderBy('dojangs.name', $direction)
+                ->select('participants.*');
+        } else {
+            $query->orderBy($sort, $direction);
+        }
+
+        $participants = $query->paginate($perPage)->withQueryString();
 
         if (request()->expectsJson()) {
             return response()->json($participants);
         }
 
-        return view('participants.index', compact('participants'));
+        return view('participants.index', compact('participants', 'sort', 'direction', 'perPage'));
     }
 
     public function create()

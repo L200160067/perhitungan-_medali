@@ -16,13 +16,28 @@ class TournamentCategoryController extends Controller
 {
     public function index()
     {
-        $tournamentCategories = TournamentCategory::query()->with('event')->latest()->get();
+        $perPage = request('per_page', 25);
+        $sort = request('sort', 'name');
+        $direction = request('direction', 'asc');
+
+        $query = TournamentCategory::query()->with('event');
+
+        // Sorting
+        if ($sort === 'event') {
+            $query->join('events', 'tournament_categories.event_id', '=', 'events.id')
+                ->orderBy('events.name', $direction)
+                ->select('tournament_categories.*');
+        } else {
+            $query->orderBy($sort, $direction);
+        }
+
+        $tournamentCategories = $query->paginate($perPage)->withQueryString();
 
         if (request()->expectsJson()) {
             return response()->json($tournamentCategories);
         }
 
-        return view('tournament-categories.index', compact('tournamentCategories'));
+        return view('tournament-categories.index', compact('tournamentCategories', 'sort', 'direction', 'perPage'));
     }
 
     public function create()

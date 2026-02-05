@@ -16,13 +16,51 @@ class RegistrationController extends Controller
 {
     public function index()
     {
-        $registrations = Registration::query()->with(['category', 'participant', 'contingent', 'medal'])->latest()->get();
+        $perPage = request('per_page', 25);
+        $sort = request('sort', 'created_at');
+        $direction = request('direction', 'desc');
+        $eventId = request('event_id');
+        
+        $events = \App\Models\Event::all();
+
+        $query = Registration::query()
+            ->with(['category', 'participant', 'contingent', 'medal']);
+
+        // Filtering
+        if ($eventId) {
+            $query->whereHas('category', function ($q) use ($eventId) {
+                $q->where('event_id', $eventId);
+            });
+        }
+
+        // Sorting
+        if ($sort === 'category') {
+            $query->join('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
+                ->orderBy('tournament_categories.name', $direction)
+                ->select('registrations.*');
+        } elseif ($sort === 'participant') {
+            $query->join('participants', 'registrations.participant_id', '=', 'participants.id')
+                ->orderBy('participants.name', $direction)
+                ->select('registrations.*');
+        } elseif ($sort === 'contingent') {
+            $query->join('contingents', 'registrations.contingent_id', '=', 'contingents.id')
+                ->orderBy('contingents.name', $direction)
+                ->select('registrations.*');
+        } elseif ($sort === 'medal') {
+            $query->leftJoin('medals', 'registrations.medal_id', '=', 'medals.id')
+                ->orderBy('medals.rank', $direction)
+                ->select('registrations.*');
+        } else {
+            $query->orderBy($sort, $direction);
+        }
+
+        $registrations = $query->paginate($perPage)->withQueryString();
 
         if (request()->expectsJson()) {
             return response()->json($registrations);
         }
 
-        return view('registrations.index', compact('registrations'));
+        return view('registrations.index', compact('registrations', 'events', 'eventId', 'sort', 'direction', 'perPage'));
     }
 
     public function create()

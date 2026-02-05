@@ -12,13 +12,32 @@ class ContingentController extends Controller
 {
     public function index()
     {
-        $contingents = Contingent::query()->with(['event', 'dojang'])->latest()->get();
+        $perPage = request('per_page', 25);
+        $sort = request('sort', 'name');
+        $direction = request('direction', 'asc');
+
+        $query = Contingent::query()->with(['event', 'dojang']);
+
+        // Sorting
+        if ($sort === 'event') {
+            $query->join('events', 'contingents.event_id', '=', 'events.id')
+                ->orderBy('events.name', $direction)
+                ->select('contingents.*');
+        } elseif ($sort === 'dojang') {
+            $query->join('dojangs', 'contingents.dojang_id', '=', 'dojangs.id')
+                ->orderBy('dojangs.name', $direction)
+                ->select('contingents.*');
+        } else {
+            $query->orderBy($sort, $direction);
+        }
+
+        $contingents = $query->paginate($perPage)->withQueryString();
 
         if (request()->expectsJson()) {
             return response()->json($contingents);
         }
 
-        return view('contingents.index', compact('contingents'));
+        return view('contingents.index', compact('contingents', 'sort', 'direction', 'perPage'));
     }
 
     public function create()

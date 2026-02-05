@@ -10,13 +10,21 @@ class DojangController extends Controller
 {
     public function index()
     {
-        $dojangs = Dojang::query()->withCount(['participants', 'contingents'])->latest()->get();
+        $perPage = request('per_page', 25);
+        $sort = request('sort', 'name');
+        $direction = request('direction', 'asc');
+
+        $query = Dojang::query()->withCount(['participants', 'contingents']);
+
+        $query->orderBy($sort, $direction);
+
+        $dojangs = $query->paginate($perPage)->withQueryString();
 
         if (request()->expectsJson()) {
             return response()->json($dojangs);
         }
 
-        return view('dojangs.index', compact('dojangs'));
+        return view('dojangs.index', compact('dojangs', 'sort', 'direction', 'perPage'));
     }
 
     public function create()

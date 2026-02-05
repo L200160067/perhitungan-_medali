@@ -14,45 +14,46 @@ class RegistrationSeeder extends Seeder
 {
     public function run(): void
     {
-        $categories = TournamentCategory::query()->get();
-        if ($categories->isEmpty()) {
-            $categories = TournamentCategory::factory()->count(3)->create();
-        }
-
-        $contingents = Contingent::query()->get();
-        if ($contingents->isEmpty()) {
-            $contingents = Contingent::factory()->count(5)->create();
-        }
-
-        $participants = Participant::query()->get();
+        $events = \App\Models\Event::with(['tournamentCategories', 'contingents'])->get();
+        $participants = Participant::all();
         if ($participants->isEmpty()) {
-            $participants = Participant::factory()->count(20)->create();
+            $participants = Participant::factory()->count(50)->create();
         }
+        $medals = Medal::all();
 
-        $medals = Medal::query()->get();
+        foreach ($events as $event) {
+            $categories = $event->tournamentCategories;
+            $contingents = $event->contingents;
 
-        foreach ($contingents as $contingent) {
-            foreach ($categories as $category) {
-                Registration::factory()->create([
-                    'participant_id' => $participants->random()->id,
-                    'contingent_id' => $contingent->id,
-                    'category_id' => $category->id,
-                    'status' => RegistrationStatus::Registered,
-                    'medal_id' => null,
-                ]);
+            if ($categories->isEmpty() || $contingents->isEmpty()) {
+                continue;
             }
-        }
 
-        if ($medals->isNotEmpty()) {
-            $awarded = $categories->take(3)->values();
-            foreach ($awarded as $index => $category) {
-                Registration::factory()->awarded()->create([
-                    'participant_id' => $participants->random()->id,
-                    'category_id' => $category->id,
-                    'contingent_id' => $contingents->random()->id,
-                    'status' => RegistrationStatus::Competed,
-                    'medal_id' => $medals->get($index % $medals->count())->id,
-                ]);
+            foreach ($categories as $category) {
+                // Create 5 registrations per category for speed
+                $regCount = 5;
+                $availableParticipants = $participants->shuffle();
+                
+                for ($i = 0; $i < $regCount; $i++) {
+                    $participant = $availableParticipants->pop();
+                    $contingent = $contingents->random();
+
+                    $registration = Registration::factory()->create([
+                        'participant_id' => $participant->id,
+                        'contingent_id' => $contingent->id,
+                        'category_id' => $category->id,
+                        'status' => RegistrationStatus::Registered,
+                        'medal_id' => null,
+                    ]);
+
+                    // Simple awarding: first 3 get medals if it's a small set
+                    if ($i < 3 && $medals->isNotEmpty()) {
+                        $registration->update([
+                            'status' => RegistrationStatus::Competed,
+                            'medal_id' => $medals[$i % $medals->count()]->id,
+                        ]);
+                    }
+                }
             }
         }
     }
