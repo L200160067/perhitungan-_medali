@@ -42,6 +42,17 @@
                             <label for="bronze_point" class="block text-sm font-medium text-gray-700 dark:text-gray-300">🥉 Poin Perunggu</label>
                             <input type="number" name="bronze_point" id="bronze_point" value="{{ old('bronze_point', 1) }}" min="0" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
+                        </div>
+                    </div>
+
+                    <div class="relative flex items-start">
+                        <div class="flex h-6 items-center">
+                            <input id="count_festival_medals" aria-describedby="count_festival_medals-description" name="count_festival_medals" type="checkbox" value="1" {{ old('count_festival_medals') ? 'checked' : '' }} class="h-4 w-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-600 dark:bg-gray-900">
+                        </div>
+                        <div class="ml-3 text-sm leading-6">
+                            <label for="count_festival_medals" class="font-medium text-gray-900 dark:text-gray-100">Hitung Medali Festival?</label>
+                            <p id="count_festival_medals-description" class="text-gray-500 dark:text-gray-400">Jika diaktifkan, medali dari kategori Festival akan ikut dihitung dalam klasemen "Kategori Prestasi".</p>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">

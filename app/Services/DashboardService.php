@@ -39,7 +39,11 @@ class DashboardService
             ->leftJoin('registrations', 'contingents.id', '=', 'registrations.contingent_id')
             ->leftJoin('medals', 'registrations.medal_id', '=', 'medals.id')
             ->leftJoin('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
-            ->where('tournament_categories.category_type', '=', 'prestasi');
+            ->join('events', 'contingents.event_id', '=', 'events.id')
+            ->where(function ($q) {
+                $q->where('tournament_categories.category_type', '=', 'prestasi')
+                  ->orWhere('events.count_festival_medals', '=', true);
+            });
 
         if ($eventId) {
             $query->where('contingents.event_id', $eventId);

@@ -84,7 +84,9 @@ class RegistrationController extends Controller
             return response()->json($registrations);
         }
 
-        return view('registrations.index', compact('registrations', 'events', 'eventId', 'sort', 'direction', 'perPage', 'search'));
+        $medalStats = $this->registrationService->getMedalStats($eventId, $search);
+
+        return view('registrations.index', compact('registrations', 'events', 'eventId', 'sort', 'direction', 'perPage', 'search', 'medalStats'));
     }
 
     public function create()

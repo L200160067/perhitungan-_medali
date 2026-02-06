@@ -24,6 +24,16 @@
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Nama Pertandingan</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-medium">{{ $event->name }}</dd></div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">ID</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $event->id }}</dd></div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Durasi</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $event->start_date->format('d M Y') }} - {{ $event->end_date->format('d M Y') }}</dd></div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Peraturan Klasemen</dt>
+                        <dd class="mt-1">
+                            @if($event->count_festival_medals)
+                                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400">Termasuk Festival</span>
+                            @else
+                                <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400">Standar (Hanya Prestasi)</span>
+                            @endif
+                        </dd>
+                    </div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">🥇 Poin Emas</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">{{ $event->gold_point ?? 3 }}</dd></div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">🥈 Poin Perak</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">{{ $event->silver_point ?? 2 }}</dd></div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">🥉 Poin Perunggu</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">{{ $event->bronze_point ?? 1 }}</dd></div>

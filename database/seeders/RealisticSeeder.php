@@ -41,43 +41,62 @@ class RealisticSeeder extends Seeder
             $dojangs->push(Dojang::create(['name' => $name]));
         }
 
-        // 3. Create a Main Event
-        $event = Event::create([
-            'name' => 'Kejuaraan Pelajar Se-Indonesia ' . date('Y'),
+        // 3. Create Events with different rules
+        $events = collect();
+        
+        // Event A: Standard (Prestasi only counts)
+        $events->push(Event::create([
+            'name' => 'Kejuaraan Nasional Pelajar ' . date('Y'),
             'start_date' => Carbon::now()->addDays(14),
             'end_date' => Carbon::now()->addDays(16),
             'gold_point' => 5,
             'silver_point' => 3,
             'bronze_point' => 1,
-        ]);
+            'count_festival_medals' => false, // Standard logic
+        ]));
 
-        // 4. Create Categories (Prestasi & Pemula)
-        $categories = $this->createCategories($event);
+        // Event B: Festival Friendly (Festival counts)
+        $events->push(Event::create([
+            'name' => 'Festival Taekwondo Ceria ' . date('Y'),
+            'start_date' => Carbon::now()->addMonths(2),
+            'end_date' => Carbon::now()->addMonths(2)->addDays(2),
+            'gold_point' => 3,
+            'silver_point' => 2,
+            'bronze_point' => 1,
+            'count_festival_medals' => true, // New Flexible logic
+        ]));
 
-        // 5. Create Participants & Contingents per Dojang
-        foreach ($dojangs as $dojang) {
-            // Create a contingent for this Dojang in this Event
-            $contingent = Contingent::create([
-                'event_id' => $event->id,
-                'dojang_id' => $dojang->id,
-                'name' => $dojang->name . ' - ' . $event->name,
-            ]);
+        foreach ($events as $event) {
+            // 4. Create Categories (Prestasi & Pemula) for THIS event
+            $categories = $this->createCategories($event);
 
-            // Generate 15-20 participants per Dojang
-            $numParticipants = rand(15, 20);
-            for ($i = 0; $i < $numParticipants; $i++) {
-                $gender = rand(0, 1) ? ParticipantGender::Male : ParticipantGender::Female;
-                $birthDate = Carbon::now()->subYears(rand(10, 17)); // Ages 10-17
-
-                $participant = Participant::create([
+            // 5. Create Participants & Contingents per Dojang for THIS event
+            foreach ($dojangs as $dojang) {
+                // Create a contingent for this Dojang in this Event
+                $contingent = Contingent::create([
+                    'event_id' => $event->id,
                     'dojang_id' => $dojang->id,
-                    'name' => fake()->name($gender->value),
-                    'gender' => $gender,
-                    'birth_date' => $birthDate,
+                    'name' => $dojang->name . ' - ' . substr($event->name, 0, 10),
                 ]);
 
-                // Register Participant to a suitable Category
-                $this->registerParticipant($participant, $contingent, $categories, $medals);
+                // Generate 10-15 participants per DOJANG per EVENT
+                $numParticipants = rand(10, 15);
+                for ($i = 0; $i < $numParticipants; $i++) {
+                    $gender = rand(0, 1) ? ParticipantGender::Male : ParticipantGender::Female;
+                    $birthDate = Carbon::now()->subYears(rand(6, 17)); // Ages 6-17 (Wider range for Festival)
+
+                    // Re-use participant if exists? No, create new specific to dojang usually
+                    // But for realism, maybe create fresh params
+                    $participant = Participant::create([
+                        'dojang_id' => $dojang->id,
+                        'name' => fake()->name($gender->value),
+                        'gender' => $gender,
+                        'birth_date' => $birthDate,
+                    ]);
+
+                    // Register Participant to a suitable Category
+                    $this->registerParticipant($participant, $contingent, $categories, $medals);
+                }
             }
         }
     }
@@ -85,6 +104,10 @@ class RealisticSeeder extends Seeder
     private function createCategories(Event $event)
     {
         $classes = [
+            // Pra-Cadet (6-11 years) - mostly Festival
+            ['name' => 'Pra-Cadet A', 'min_weight' => 0, 'max_weight' => 25, 'min_age' => 6, 'max_age' => 8],
+            ['name' => 'Pra-Cadet B', 'min_weight' => 25, 'max_weight' => 35, 'min_age' => 9, 'max_age' => 11],
+
             // Cadet (12-14 years)
             ['name' => 'Cadet U-33kg', 'min_weight' => 0, 'max_weight' => 33, 'min_age' => 12, 'max_age' => 14],
             ['name' => 'Cadet U-41kg', 'min_weight' => 33, 'max_weight' => 41, 'min_age' => 12, 'max_age' => 14],

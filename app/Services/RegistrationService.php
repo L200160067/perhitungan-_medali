@@ -74,4 +74,43 @@ class RegistrationService
             ]);
         }
     }
+
+
+    public function getMedalStats(?int $eventId = null, ?string $search = null): array
+    {
+        $query = Registration::query()
+            ->join('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
+            ->where('tournament_categories.category_type', \App\Enums\CategoryType::Prestasi);
+
+        // Filter by Event
+        if ($eventId) {
+            $query->where('tournament_categories.event_id', $eventId);
+        }
+
+        // Filter by Search
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('participant', function ($pq) use ($search) {
+                    $pq->where('name', 'like', "%{$search}%");
+                })->orWhereHas('contingent', function ($cq) use ($search) {
+                    $cq->where('name', 'like', "%{$search}%");
+                })->orWhereHas('category', function ($tq) use ($search) {
+                    $tq->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Aggregate Medal Counts
+        $stats = $query->join('medals', 'registrations.medal_id', '=', 'medals.id')
+            ->selectRaw('medals.name as medal_name, count(*) as count')
+            ->groupBy('medals.name')
+            ->pluck('count', 'medal_name')
+            ->toArray();
+
+        return [
+            'gold' => $stats['gold'] ?? 0,
+            'silver' => $stats['silver'] ?? 0,
+            'bronze' => $stats['bronze'] ?? 0,
+        ];
+    }
 }

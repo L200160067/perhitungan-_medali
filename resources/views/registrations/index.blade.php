@@ -74,23 +74,18 @@
                 <p class="text-sm text-blue-700 dark:text-blue-300 font-medium">Rekap Medali (Kategori Prestasi)</p>
             </div>
             <div class="grid grid-cols-3 gap-3">
-                @php
-                    $registrationsForSummary = $registrations->where('category.category_type', \App\Enums\CategoryType::Prestasi);
-                    $gold = $registrationsForSummary->where('medal.name', 'gold')->count();
-                    $silver = $registrationsForSummary->where('medal.name', 'silver')->count();
-                    $bronze = $registrationsForSummary->where('medal.name', 'bronze')->count();
-                @endphp
+
                 <div class="bg-white dark:bg-gray-800 px-4 py-3 rounded-xl shadow-sm border border-yellow-200 dark:border-yellow-700/50 flex flex-col items-center min-w-[90px] transition-transform hover:scale-105 duration-200">
                     <span class="text-[10px] font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-wider mb-1">Emas</span>
-                    <span class="text-2xl font-black text-gray-900 dark:text-white">{{ $gold }}</span>
+                    <span class="text-2xl font-black text-gray-900 dark:text-white">{{ $medalStats['gold'] }}</span>
                 </div>
                 <div class="bg-white dark:bg-gray-800 px-4 py-3 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col items-center min-w-[90px] transition-transform hover:scale-105 duration-200">
                     <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Perak</span>
-                    <span class="text-2xl font-black text-gray-900 dark:text-white">{{ $silver }}</span>
+                    <span class="text-2xl font-black text-gray-900 dark:text-white">{{ $medalStats['silver'] }}</span>
                 </div>
                 <div class="bg-white dark:bg-gray-800 px-4 py-3 rounded-xl shadow-sm border border-orange-200 dark:border-orange-700/50 flex flex-col items-center min-w-[90px] transition-transform hover:scale-105 duration-200">
                     <span class="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-1">Perunggu</span>
-                    <span class="text-2xl font-black text-gray-900 dark:text-white">{{ $bronze }}</span>
+                    <span class="text-2xl font-black text-gray-900 dark:text-white">{{ $medalStats['bronze'] }}</span>
                 </div>
             </div>
         </div>

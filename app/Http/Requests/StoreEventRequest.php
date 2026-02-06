@@ -20,6 +20,7 @@ class StoreEventRequest extends FormRequest
             'gold_point' => 'sometimes|integer|min:0',
             'silver_point' => 'sometimes|integer|min:0',
             'bronze_point' => 'sometimes|integer|min:0',
+            'count_festival_medals' => 'sometimes|boolean',
         ];
     }
 }
