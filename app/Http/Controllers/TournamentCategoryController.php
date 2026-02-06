@@ -6,11 +6,11 @@ use App\Enums\CategoryType;
 use App\Enums\PoomsaeType;
 use App\Enums\TournamentGender;
 use App\Enums\TournamentType;
+use App\Http\Requests\StoreTournamentCategoryRequest;
+use App\Http\Requests\UpdateTournamentCategoryRequest;
 use App\Models\Event;
 use App\Models\TournamentCategory;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Validation\Rule;
 
 class TournamentCategoryController extends Controller
 {
@@ -62,11 +62,9 @@ class TournamentCategoryController extends Controller
         return view('tournament-categories.create', compact('events', 'types', 'genders', 'poomsaeTypes', 'categoryTypes'));
     }
 
-    public function store(Request $request)
+    public function store(StoreTournamentCategoryRequest $request)
     {
-        $data = $request->validate($this->rules());
-
-        $tournamentCategory = TournamentCategory::query()->create($data);
+        $tournamentCategory = TournamentCategory::query()->create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($tournamentCategory, Response::HTTP_CREATED);
@@ -97,11 +95,9 @@ class TournamentCategoryController extends Controller
         return view('tournament-categories.edit', compact('tournamentCategory', 'events', 'types', 'genders', 'poomsaeTypes', 'categoryTypes'));
     }
 
-    public function update(Request $request, TournamentCategory $tournamentCategory)
+    public function update(UpdateTournamentCategoryRequest $request, TournamentCategory $tournamentCategory)
     {
-        $data = $request->validate($this->rules(true));
-
-        $tournamentCategory->update($data);
+        $tournamentCategory->update($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($tournamentCategory);
@@ -119,54 +115,5 @@ class TournamentCategoryController extends Controller
         }
 
         return redirect()->route('tournament-categories.index')->with('success', 'Kategori pertandingan berhasil dihapus!');
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function rules(bool $isUpdate = false): array
-    {
-        $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
-        $presenceRules = $isUpdate ? ['sometimes'] : ['sometimes'];
-
-        $typeValues = array_map(fn (TournamentType $type) => $type->value, TournamentType::cases());
-        $genderValues = array_map(fn (TournamentGender $gender) => $gender->value, TournamentGender::cases());
-        $poomsaeTypeValues = array_map(fn (PoomsaeType $type) => $type->value, PoomsaeType::cases());
-        $categoryTypeValues = array_map(fn (CategoryType $type) => $type->value, CategoryType::cases());
-
-        return [
-            'event_id' => $prefix . 'integer|exists:events,id',
-            'name' => $prefix . 'string|max:255',
-            'type' => [
-                ...$presenceRules,
-                'required',
-                'string',
-                Rule::in($typeValues),
-            ],
-            'category_type' => [
-                ...$presenceRules,
-                'required',
-                'string',
-                Rule::in($categoryTypeValues),
-            ],
-            'gender' => [
-                ...$presenceRules,
-                'required',
-                'string',
-                Rule::in($genderValues),
-            ],
-            'age_reference_date' => $isUpdate ? 'sometimes|nullable|date' : 'nullable|date',
-            'min_age' => $isUpdate ? 'sometimes|nullable|integer|min:0' : 'nullable|integer|min:0',
-            'max_age' => $isUpdate ? 'sometimes|nullable|integer|min:0' : 'nullable|integer|min:0',
-            'weight_class_name' => $isUpdate ? 'sometimes|nullable|string|max:255' : 'nullable|string|max:255',
-            'min_weight' => $isUpdate ? 'sometimes|nullable|numeric|min:0' : 'nullable|numeric|min:0',
-            'max_weight' => $isUpdate ? 'sometimes|nullable|numeric|min:0' : 'nullable|numeric|min:0',
-            'poomsae_type' => [
-                ...$presenceRules,
-                'nullable',
-                'string',
-                Rule::in($poomsaeTypeValues),
-            ],
-        ];
     }
 }

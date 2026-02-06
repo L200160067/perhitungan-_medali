@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEventRequest;
+use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -37,11 +39,9 @@ class EventController extends Controller
         return view('events.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreEventRequest $request)
     {
-        $data = $request->validate($this->rules());
-
-        $event = Event::query()->create($data);
+        $event = Event::query()->create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($event, Response::HTTP_CREATED);
@@ -64,11 +64,9 @@ class EventController extends Controller
         return view('events.edit', compact('event'));
     }
 
-    public function update(Request $request, Event $event)
+    public function update(UpdateEventRequest $request, Event $event)
     {
-        $data = $request->validate($this->rules(true));
-
-        $event->update($data);
+        $event->update($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($event);
@@ -86,25 +84,5 @@ class EventController extends Controller
         }
 
         return redirect()->route('events.index')->with('success', 'Pertandingan berhasil dihapus!');
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function rules(bool $isUpdate = false): array
-    {
-        $datePrefix = $isUpdate ? 'sometimes|required|' : 'required|';
-        $pointsPrefix = $isUpdate ? 'sometimes|integer|min:0' : 'sometimes|integer|min:0';
-
-        return [
-            'name' => 'required|string|max:255',
-            'start_date' => $datePrefix.'date',
-            'end_date' => $isUpdate
-                ? $datePrefix.'date'
-                : $datePrefix.'date|after_or_equal:start_date',
-            'gold_point' => $pointsPrefix,
-            'silver_point' => $pointsPrefix,
-            'bronze_point' => $pointsPrefix,
-        ];
     }
 }

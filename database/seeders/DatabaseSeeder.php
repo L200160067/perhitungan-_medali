@@ -16,17 +16,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            MedalSeeder::class,
-            DemoEventSeeder::class,
-            DojangSeeder::class,
-            ParticipantSeeder::class,
-            ContingentSeeder::class,
-            RegistrationSeeder::class,
-        ]);
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            AdminSeeder::class,
+            RealisticSeeder::class,
         ]);
     }
 }

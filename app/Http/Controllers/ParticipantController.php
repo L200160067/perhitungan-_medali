@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ParticipantGender;
+use App\Http\Requests\StoreParticipantRequest;
+use App\Http\Requests\UpdateParticipantRequest;
 use App\Models\Participant;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Validation\Rule;
 
 class ParticipantController extends Controller
 {
@@ -55,11 +55,9 @@ class ParticipantController extends Controller
         return view('participants.create', compact('dojangs', 'genders'));
     }
 
-    public function store(Request $request)
+    public function store(StoreParticipantRequest $request)
     {
-        $data = $request->validate($this->rules());
-
-        $participant = Participant::query()->create($data);
+        $participant = Participant::query()->create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($participant, Response::HTTP_CREATED);
@@ -87,11 +85,9 @@ class ParticipantController extends Controller
         return view('participants.edit', compact('participant', 'dojangs', 'genders'));
     }
 
-    public function update(Request $request, Participant $participant)
+    public function update(UpdateParticipantRequest $request, Participant $participant)
     {
-        $data = $request->validate($this->rules(true));
-
-        $participant->update($data);
+        $participant->update($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($participant);
@@ -109,25 +105,5 @@ class ParticipantController extends Controller
         }
 
         return redirect()->route('participants.index')->with('success', 'Peserta berhasil dihapus!');
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function rules(bool $isUpdate = false): array
-    {
-        $presenceRules = $isUpdate ? ['sometimes', 'required'] : ['required'];
-        $genderValues = array_map(fn (ParticipantGender $gender) => $gender->value, ParticipantGender::cases());
-
-        return [
-            'dojang_id' => ($isUpdate ? 'sometimes|required|' : 'required|') . 'integer|exists:dojangs,id',
-            'name' => ($isUpdate ? 'sometimes|required|' : 'required|') . 'string|max:255',
-            'gender' => [
-                ...$presenceRules,
-                'string',
-                Rule::in($genderValues),
-            ],
-            'birth_date' => ($isUpdate ? 'sometimes|required|' : 'required|') . 'date',
-        ];
     }
 }

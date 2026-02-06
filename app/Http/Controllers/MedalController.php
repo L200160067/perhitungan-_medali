@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreMedalRequest;
+use App\Http\Requests\UpdateMedalRequest;
 use App\Models\Medal;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class MedalController extends Controller
@@ -24,11 +25,9 @@ class MedalController extends Controller
         return view('medals.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreMedalRequest $request)
     {
-        $data = $request->validate($this->rules());
-
-        $medal = Medal::query()->create($data);
+        $medal = Medal::query()->create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($medal, Response::HTTP_CREATED);
@@ -51,11 +50,9 @@ class MedalController extends Controller
         return view('medals.edit', compact('medal'));
     }
 
-    public function update(Request $request, Medal $medal)
+    public function update(UpdateMedalRequest $request, Medal $medal)
     {
-        $data = $request->validate($this->rules(true));
-
-        $medal->update($data);
+        $medal->update($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($medal);
@@ -73,18 +70,5 @@ class MedalController extends Controller
         }
 
         return redirect()->route('medals.index')->with('success', 'Medali berhasil dihapus!');
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function rules(bool $isUpdate = false): array
-    {
-        $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
-
-        return [
-            'name' => $prefix.'string|max:255',
-            'rank' => $prefix.'integer|min:1',
-        ];
     }
 }

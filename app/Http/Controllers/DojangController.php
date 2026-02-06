@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreDojangRequest;
+use App\Http\Requests\UpdateDojangRequest;
 use App\Models\Dojang;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class DojangController extends Controller
@@ -37,11 +38,9 @@ class DojangController extends Controller
         return view('dojangs.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreDojangRequest $request)
     {
-        $data = $request->validate($this->rules());
-
-        $dojang = Dojang::query()->create($data);
+        $dojang = Dojang::query()->create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($dojang, Response::HTTP_CREATED);
@@ -66,11 +65,9 @@ class DojangController extends Controller
         return view('dojangs.edit', compact('dojang'));
     }
 
-    public function update(Request $request, Dojang $dojang)
+    public function update(UpdateDojangRequest $request, Dojang $dojang)
     {
-        $data = $request->validate($this->rules(true));
-
-        $dojang->update($data);
+        $dojang->update($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($dojang);
@@ -88,17 +85,5 @@ class DojangController extends Controller
         }
 
         return redirect()->route('dojangs.index')->with('success', 'Dojang berhasil dihapus!');
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function rules(bool $isUpdate = false): array
-    {
-        $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
-
-        return [
-            'name' => $prefix . 'string|max:255',
-        ];
     }
 }

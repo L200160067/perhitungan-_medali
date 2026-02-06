@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreContingentRequest;
+use App\Http\Requests\UpdateContingentRequest;
 use App\Models\Contingent;
 use App\Models\Dojang;
 use App\Models\Event;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ContingentController extends Controller
@@ -62,11 +63,9 @@ class ContingentController extends Controller
         return view('contingents.create', compact('events', 'dojangs'));
     }
 
-    public function store(Request $request)
+    public function store(StoreContingentRequest $request)
     {
-        $data = $request->validate($this->rules());
-
-        $contingent = Contingent::query()->create($data);
+        $contingent = Contingent::query()->create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($contingent, Response::HTTP_CREATED);
@@ -94,11 +93,9 @@ class ContingentController extends Controller
         return view('contingents.edit', compact('contingent', 'events', 'dojangs'));
     }
 
-    public function update(Request $request, Contingent $contingent)
+    public function update(UpdateContingentRequest $request, Contingent $contingent)
     {
-        $data = $request->validate($this->rules(true));
-
-        $contingent->update($data);
+        $contingent->update($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($contingent);
@@ -116,19 +113,5 @@ class ContingentController extends Controller
         }
 
         return redirect()->route('contingents.index')->with('success', 'Kontingen berhasil dihapus!');
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function rules(bool $isUpdate = false): array
-    {
-        $prefix = $isUpdate ? 'sometimes|required|' : 'required|';
-
-        return [
-            'event_id' => $prefix . 'integer|exists:events,id',
-            'dojang_id' => $prefix . 'integer|exists:dojangs,id',
-            'name' => $prefix . 'string|max:255',
-        ];
     }
 }
