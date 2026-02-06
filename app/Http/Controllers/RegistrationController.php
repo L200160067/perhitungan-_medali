@@ -60,7 +60,7 @@ class RegistrationController extends Controller
                 ->select('registrations.*');
         } elseif ($sort === 'type') {
             $query->join('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
-                ->orderBy('tournament_categories.type', $direction)
+                ->orderByRaw("CASE WHEN tournament_categories.category_type = 'prestasi' THEN 1 ELSE 2 END $direction")
                 ->select('registrations.*');
         } elseif ($sort === 'participant') {
             $query->join('participants', 'registrations.participant_id', '=', 'participants.id')
@@ -72,7 +72,7 @@ class RegistrationController extends Controller
                 ->select('registrations.*');
         } elseif ($sort === 'medal') {
             $query->leftJoin('medals', 'registrations.medal_id', '=', 'medals.id')
-                ->orderBy('medals.rank', $direction)
+                ->orderByRaw("COALESCE(medals.rank, 99) $direction")
                 ->select('registrations.*');
         } else {
             $query->orderBy($sort, $direction);
