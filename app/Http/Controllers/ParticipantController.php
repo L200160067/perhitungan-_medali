@@ -52,7 +52,10 @@ class ParticipantController extends Controller
         $dojangs = \App\Models\Dojang::all();
         $genders = ParticipantGender::cases();
 
-        return view('participants.create', compact('dojangs', 'genders'));
+        // Capture query params
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('participants.create', compact('dojangs', 'genders', 'queryParams'));
     }
 
     public function store(StoreParticipantRequest $request)
@@ -63,7 +66,9 @@ class ParticipantController extends Controller
             return response()->json($participant, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('participants.index')->with('success', 'Peserta berhasil ditambahkan!');
+        // Redirect back with params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('participants.index', $queryParams)->with('success', 'Peserta berhasil ditambahkan!');
     }
 
     public function show(Participant $participant)
@@ -82,7 +87,10 @@ class ParticipantController extends Controller
         $dojangs = \App\Models\Dojang::all();
         $genders = ParticipantGender::cases();
 
-        return view('participants.edit', compact('participant', 'dojangs', 'genders'));
+        // Capture query params
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('participants.edit', compact('participant', 'dojangs', 'genders', 'queryParams'));
     }
 
     public function update(UpdateParticipantRequest $request, Participant $participant)
@@ -93,7 +101,9 @@ class ParticipantController extends Controller
             return response()->json($participant);
         }
 
-        return redirect()->route('participants.index')->with('success', 'Peserta berhasil diperbarui!');
+        // Redirect back with params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('participants.index', $queryParams)->with('success', 'Peserta berhasil diperbarui!');
     }
 
     public function destroy(Participant $participant)
@@ -104,6 +114,8 @@ class ParticipantController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('participants.index')->with('success', 'Peserta berhasil dihapus!');
+        // Redirect back with params
+        $queryParams = request()->except(['_token', '_method']);
+        return redirect()->route('participants.index', $queryParams)->with('success', 'Peserta berhasil dihapus!');
     }
 }

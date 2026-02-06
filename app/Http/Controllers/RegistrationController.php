@@ -97,7 +97,10 @@ class RegistrationController extends Controller
         $medals = Medal::all();
         $statuses = RegistrationStatus::cases();
 
-        return view('registrations.create', compact('categories', 'participants', 'contingents', 'medals', 'statuses'));
+        // Capture query params to preserve context
+        $queryParams = request()->only(['event_id', 'search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('registrations.create', compact('categories', 'participants', 'contingents', 'medals', 'statuses', 'queryParams'));
     }
 
     public function store(StoreRegistrationRequest $request)
@@ -108,7 +111,9 @@ class RegistrationController extends Controller
             return response()->json($registration, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('registrations.index')->with('success', 'Pendaftaran berhasil ditambahkan!');
+        // Redirect back with original query params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('registrations.index', $queryParams)->with('success', 'Pendaftaran berhasil ditambahkan!');
     }
 
     public function show(Registration $registration)
@@ -130,7 +135,10 @@ class RegistrationController extends Controller
         $medals = Medal::all();
         $statuses = RegistrationStatus::cases();
 
-        return view('registrations.edit', compact('registration', 'categories', 'participants', 'contingents', 'medals', 'statuses'));
+        // Capture query params to preserve context
+        $queryParams = request()->only(['event_id', 'search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('registrations.edit', compact('registration', 'categories', 'participants', 'contingents', 'medals', 'statuses', 'queryParams'));
     }
 
     public function update(UpdateRegistrationRequest $request, Registration $registration)
@@ -141,7 +149,9 @@ class RegistrationController extends Controller
             return response()->json($registration);
         }
 
-        return redirect()->route('registrations.index')->with('success', 'Pendaftaran berhasil diperbarui!');
+        // Redirect back with original query params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('registrations.index', $queryParams)->with('success', 'Pendaftaran berhasil diperbarui!');
     }
 
     public function destroy(Registration $registration)
@@ -152,6 +162,8 @@ class RegistrationController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('registrations.index')->with('success', 'Pendaftaran berhasil dihapus!');
+        // Redirect back with original query params (passed via hidden input in delete form)
+        $queryParams = request()->except(['_token', '_method']);
+        return redirect()->route('registrations.index', $queryParams)->with('success', 'Pendaftaran berhasil dihapus!');
     }
 }

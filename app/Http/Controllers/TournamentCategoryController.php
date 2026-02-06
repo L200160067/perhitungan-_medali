@@ -59,24 +59,27 @@ class TournamentCategoryController extends Controller
         $poomsaeTypes = PoomsaeType::cases();
         $categoryTypes = CategoryType::cases();
 
-        return view('tournament-categories.create', compact('events', 'types', 'genders', 'poomsaeTypes', 'categoryTypes'));
+        // Capture query params
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('tournament-categories.create', compact('events', 'types', 'genders', 'poomsaeTypes', 'categoryTypes', 'queryParams'));
     }
 
     public function store(StoreTournamentCategoryRequest $request)
     {
-        $tournamentCategory = TournamentCategory::query()->create($request->validated());
+        $category = TournamentCategory::create($request->validated());
 
         if (request()->expectsJson()) {
-            return response()->json($tournamentCategory, Response::HTTP_CREATED);
+            return response()->json($category, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('tournament-categories.index')->with('success', 'Kategori pertandingan berhasil ditambahkan!');
+        // Redirect back with params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('tournament-categories.index', $queryParams)->with('success', 'Kategori berhasil ditambahkan!');
     }
 
     public function show(TournamentCategory $tournamentCategory)
     {
-        $tournamentCategory->load('event');
-
         if (request()->expectsJson()) {
             return response()->json($tournamentCategory);
         }
@@ -92,7 +95,10 @@ class TournamentCategoryController extends Controller
         $poomsaeTypes = PoomsaeType::cases();
         $categoryTypes = CategoryType::cases();
 
-        return view('tournament-categories.edit', compact('tournamentCategory', 'events', 'types', 'genders', 'poomsaeTypes', 'categoryTypes'));
+        // Capture query params
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('tournament-categories.edit', compact('tournamentCategory', 'events', 'types', 'genders', 'poomsaeTypes', 'categoryTypes', 'queryParams'));
     }
 
     public function update(UpdateTournamentCategoryRequest $request, TournamentCategory $tournamentCategory)
@@ -103,7 +109,9 @@ class TournamentCategoryController extends Controller
             return response()->json($tournamentCategory);
         }
 
-        return redirect()->route('tournament-categories.index')->with('success', 'Kategori pertandingan berhasil diperbarui!');
+        // Redirect back with params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('tournament-categories.index', $queryParams)->with('success', 'Kategori berhasil diperbarui!');
     }
 
     public function destroy(TournamentCategory $tournamentCategory)
@@ -114,6 +122,8 @@ class TournamentCategoryController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('tournament-categories.index')->with('success', 'Kategori pertandingan berhasil dihapus!');
+        // Redirect back with params
+        $queryParams = request()->except(['_token', '_method']);
+        return redirect()->route('tournament-categories.index', $queryParams)->with('success', 'Kategori berhasil dihapus!');
     }
 }

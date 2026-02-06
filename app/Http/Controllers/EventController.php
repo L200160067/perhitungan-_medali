@@ -36,18 +36,23 @@ class EventController extends Controller
 
     public function create()
     {
-        return view('events.create');
+        // Capture query params
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('events.create', compact('queryParams'));
     }
 
     public function store(StoreEventRequest $request)
     {
-        $event = Event::query()->create($request->validated());
+        $event = Event::create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($event, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('events.index')->with('success', 'Pertandingan berhasil ditambahkan!');
+        // Redirect back with params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('events.index', $queryParams)->with('success', 'Pertandingan berhasil ditambahkan!');
     }
 
     public function show(Event $event)
@@ -61,7 +66,10 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
-        return view('events.edit', compact('event'));
+        // Capture query params
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('events.edit', compact('event', 'queryParams'));
     }
 
     public function update(UpdateEventRequest $request, Event $event)
@@ -72,7 +80,9 @@ class EventController extends Controller
             return response()->json($event);
         }
 
-        return redirect()->route('events.index')->with('success', 'Pertandingan berhasil diperbarui!');
+        // Redirect back with params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('events.index', $queryParams)->with('success', 'Pertandingan berhasil diperbarui!');
     }
 
     public function destroy(Event $event)
@@ -83,6 +93,8 @@ class EventController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('events.index')->with('success', 'Pertandingan berhasil dihapus!');
+        // Redirect back with params
+        $queryParams = request()->except(['_token', '_method']);
+        return redirect()->route('events.index', $queryParams)->with('success', 'Pertandingan berhasil dihapus!');
     }
 }

@@ -8,7 +8,13 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <form action="{{ route('participants.update', $participant) }}" method="POST" class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-                @csrf @method('PUT')
+                @csrf
+                @method('PUT')
+                @foreach($queryParams as $key => $value)
+                    @if($value)
+                        <input type="hidden" name="query_params[{{ $key }}]" value="{{ $value }}">
+                    @endif
+                @endforeach
                 <div class="space-y-6">
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Lengkap <span class="text-red-500">*</span></label>

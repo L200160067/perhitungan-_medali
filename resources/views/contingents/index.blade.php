@@ -12,6 +12,34 @@
                     <div>
                         <p class="text-gray-600 dark:text-gray-400">Kelola kontingen</p>
                     </div>
+
+                    @if(session('success'))
+                    <div class="fixed top-20 right-4 z-50 w-full max-w-sm overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out" 
+                         x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3 w-0 flex-1 pt-0.5">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Berhasil!</p>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ session('success') }}</p>
+                                </div>
+                                <div class="ml-4 flex flex-shrink-0">
+                                    <button type="button" @click="show = false" class="inline-flex rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                        <span class="sr-only">Close</span>
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                         <form action="{{ route('contingents.index') }}" method="GET" class="relative flex-1 sm:min-w-[300px]">
                             @if($perPage != 25) <input type="hidden" name="per_page" value="{{ $perPage }}"> @endif
@@ -32,7 +60,7 @@
                                 </a>
                             @endif
                         </form>
-                        <a href="{{ route('contingents.create') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition">+ Baru</a>
+                        <a href="{{ route('contingents.create', request()->query()) }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition">+ Baru</a>
                     </div>
                 </div>
 
@@ -110,9 +138,12 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                         <a href="{{ route('contingents.show', $contingent) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition">Lihat</a>
-                                        <a href="{{ route('contingents.edit', $contingent) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition">Edit</a>
+                                        <a href="{{ route('contingents.edit', ['contingent' => $contingent] + request()->query()) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition">Edit</a>
                                         <form action="{{ route('contingents.destroy', $contingent) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin?');">
                                             @csrf @method('DELETE')
+                                            @foreach(request()->only(['search', 'page', 'sort', 'direction', 'per_page']) as $key => $value)
+                                                @if($value) <input type="hidden" name="{{ $key }}" value="{{ $value }}"> @endif
+                                            @endforeach
                                             <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition">Hapus</button>
                                         </form>
                                     </td>

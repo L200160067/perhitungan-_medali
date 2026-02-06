@@ -60,18 +60,23 @@ class ContingentController extends Controller
         $events = Event::all();
         $dojangs = Dojang::all();
 
-        return view('contingents.create', compact('events', 'dojangs'));
+        // Capture query params
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('contingents.create', compact('events', 'dojangs', 'queryParams'));
     }
 
     public function store(StoreContingentRequest $request)
     {
-        $contingent = Contingent::query()->create($request->validated());
+        $contingent = Contingent::create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($contingent, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('contingents.index')->with('success', 'Kontingen berhasil ditambahkan!');
+        // Redirect back with params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('contingents.index', $queryParams)->with('success', 'Kontingen berhasil ditambahkan!');
     }
 
     public function show(Contingent $contingent)
@@ -90,7 +95,10 @@ class ContingentController extends Controller
         $events = Event::all();
         $dojangs = Dojang::all();
 
-        return view('contingents.edit', compact('contingent', 'events', 'dojangs'));
+        // Capture query params
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('contingents.edit', compact('contingent', 'events', 'dojangs', 'queryParams'));
     }
 
     public function update(UpdateContingentRequest $request, Contingent $contingent)
@@ -101,7 +109,9 @@ class ContingentController extends Controller
             return response()->json($contingent);
         }
 
-        return redirect()->route('contingents.index')->with('success', 'Kontingen berhasil diperbarui!');
+        // Redirect back with params
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('contingents.index', $queryParams)->with('success', 'Kontingen berhasil diperbarui!');
     }
 
     public function destroy(Contingent $contingent)
@@ -112,6 +122,8 @@ class ContingentController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('contingents.index')->with('success', 'Kontingen berhasil dihapus!');
+        // Redirect back with params
+        $queryParams = request()->except(['_token', '_method']);
+        return redirect()->route('contingents.index', $queryParams)->with('success', 'Kontingen berhasil dihapus!');
     }
 }
