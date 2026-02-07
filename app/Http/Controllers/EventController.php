@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Imports\EventImport;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Response;
 
 class EventController extends Controller
@@ -101,5 +103,46 @@ class EventController extends Controller
         // Redirect back with params
         $queryParams = request()->except(['_token', '_method']);
         return redirect()->route('events.index', $queryParams)->with('success', 'Pertandingan berhasil dihapus!');
+    }
+
+    public function import()
+    {
+        $this->authorize('create', Event::class);
+        return view('events.import');
+    }
+
+    public function storeImport(Request $request)
+    {
+        $this->authorize('create', Event::class);
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            \Illuminate\Support\Facades\Log::info('Starting Event Import via Controller');
+            \Illuminate\Support\Facades\Log::info('File details:', [
+                'original_name' => $request->file('file')->getClientOriginalName(),
+                'mime_type' => $request->file('file')->getMimeType(),
+                'path' => $request->file('file')->getPathname(),
+                'size' => $request->file('file')->getSize(),
+            ]);
+
+            // Force Xlsx reader if file extension is xlsx, or auto detect
+            // Sometimes auto detection fails with streams.
+            Excel::import(new EventImport, $request->file('file'));
+            
+            \Illuminate\Support\Facades\Log::info('Event Import Completed Successfully');
+            return redirect()->route('events.index')->with('success', 'Data Pertandingan berhasil diimpor!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $messages = [];
+            foreach ($failures as $failure) {
+                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->withErrors($messages);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
 }

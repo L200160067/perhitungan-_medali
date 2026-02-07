@@ -11,6 +11,9 @@ use App\Http\Requests\UpdateTournamentCategoryRequest;
 use App\Models\Event;
 use App\Models\TournamentCategory;
 use Illuminate\Http\Response;
+use App\Imports\TournamentCategoryImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 
 class TournamentCategoryController extends Controller
 {
@@ -130,5 +133,24 @@ class TournamentCategoryController extends Controller
         // Redirect back with params
         $queryParams = request()->except(['_token', '_method']);
         return redirect()->route('tournament-categories.index', $queryParams)->with('success', 'Kategori berhasil dihapus!');
+    }
+
+    public function import()
+    {
+        $this->authorize('create', TournamentCategory::class);
+        return view('tournament-categories.import');
+    }
+
+    public function storeImport(Request $request)
+    {
+        $this->authorize('create', TournamentCategory::class);
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new TournamentCategoryImport, $request->file('file'));
+
+        return redirect()->route('tournament-categories.index')->with('success', 'Data Kategori berhasil diimpor!');
     }
 }

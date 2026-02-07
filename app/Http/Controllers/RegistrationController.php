@@ -168,4 +168,26 @@ class RegistrationController extends Controller
         $queryParams = request()->except(['_token', '_method']);
         return redirect()->route('registrations.index', $queryParams)->with('success', 'Pendaftaran berhasil dihapus!');
     }
+    public function import()
+    {
+        // Check policy if needed, though authorizeResource handles standard CRUD
+        $this->authorize('create', Registration::class);
+        return view('registrations.import');
+    }
+
+    public function storeImport(Request $request)
+    {
+        $this->authorize('create', Registration::class);
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls|max:10240',
+        ]);
+
+        try {
+            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\RegistrationImport, $request->file('file'));
+            return redirect()->route('registrations.index')->with('success', 'Data pendaftaran berhasil diimport!');
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Terjadi kesalahan saat import: ' . $e->getMessage()]);
+        }
+    }
 }

@@ -60,7 +60,12 @@
                                 </a>
                             @endif
                         </form>
+                        @role('admin')
+                        <a href="{{ route('contingents.import') }}" class="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 transition">
+                            Import Excel
+                        </a>
                         <a href="{{ route('contingents.create', request()->query()) }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition">+ Baru</a>
+                        @endrole
                     </div>
                 </div>
 
@@ -139,6 +144,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                         <a href="{{ route('contingents.show', $contingent) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition">Lihat</a>
                                         <a href="{{ route('contingents.edit', ['contingent' => $contingent] + request()->query()) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition">Edit</a>
+                                        @role('admin')
                                         <form action="{{ route('contingents.destroy', $contingent) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin?');">
                                             @csrf @method('DELETE')
                                             @foreach(request()->only(['search', 'page', 'sort', 'direction', 'per_page']) as $key => $value)
@@ -146,6 +152,7 @@
                                             @endforeach
                                             <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition">Hapus</button>
                                         </form>
+                                        @endrole
                                     </td>
                                 </tr>
                                 @empty

@@ -8,6 +8,9 @@ use App\Models\Contingent;
 use App\Models\Dojang;
 use App\Models\Event;
 use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+use App\Imports\ContingentImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ContingentController extends Controller
 {
@@ -130,5 +133,24 @@ class ContingentController extends Controller
         // Redirect back with params
         $queryParams = request()->except(['_token', '_method']);
         return redirect()->route('contingents.index', $queryParams)->with('success', 'Kontingen berhasil dihapus!');
+    }
+
+    public function import()
+    {
+        $this->authorize('create', Contingent::class);
+        return view('contingents.import');
+    }
+
+    public function storeImport(Request $request)
+    {
+        $this->authorize('create', Contingent::class);
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new ContingentImport, $request->file('file'));
+
+        return redirect()->route('contingents.index')->with('success', 'Data Kontingen berhasil diimpor!');
     }
 }

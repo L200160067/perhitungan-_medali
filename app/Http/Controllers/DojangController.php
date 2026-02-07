@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDojangRequest;
 use App\Http\Requests\UpdateDojangRequest;
+use App\Imports\DojangImport;
 use App\Models\Dojang;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Response;
 
 class DojangController extends Controller
@@ -90,5 +93,24 @@ class DojangController extends Controller
         }
 
         return redirect()->route('dojangs.index')->with('success', 'Dojang berhasil dihapus!');
+    }
+
+    public function import()
+    {
+        $this->authorize('create', Dojang::class);
+        return view('dojangs.import');
+    }
+
+    public function storeImport(Request $request)
+    {
+        $this->authorize('create', Dojang::class);
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new DojangImport, $request->file('file'));
+
+        return redirect()->route('dojangs.index')->with('success', 'Data Dojang berhasil diimpor!');
     }
 }

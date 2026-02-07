@@ -32,9 +32,14 @@
                                 </a>
                             @endif
                         </form>
+                        @role('admin')
+                        <a href="{{ route('dojangs.import') }}" class="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 transition">
+                            Import Excel
+                        </a>
                         <a href="{{ route('dojangs.create') }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition">
                             + Baru
                         </a>
+                        @endrole
                     </div>
                 </div>
 
@@ -105,11 +110,13 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                         <a href="{{ route('dojangs.show', $dojang) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition">Lihat</a>
                                         <a href="{{ route('dojangs.edit', $dojang) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition">Edit</a>
+                                        @role('admin')
                                         <form action="{{ route('dojangs.destroy', $dojang) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus dojang ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition">Hapus</button>
                                         </form>
+                                        @endrole
                                     </td>
                                 </tr>
                                 @empty

@@ -6,7 +6,11 @@ use App\Enums\ParticipantGender;
 use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\UpdateParticipantRequest;
 use App\Models\Participant;
+use App\Models\Dojang;
 use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+use App\Imports\ParticipantImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ParticipantController extends Controller
 {
@@ -122,5 +126,24 @@ class ParticipantController extends Controller
         // Redirect back with params
         $queryParams = request()->except(['_token', '_method']);
         return redirect()->route('participants.index', $queryParams)->with('success', 'Peserta berhasil dihapus!');
+    }
+
+    public function import()
+    {
+        $this->authorize('create', Participant::class);
+        return view('participants.import');
+    }
+
+    public function storeImport(Request $request)
+    {
+        $this->authorize('create', Participant::class);
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        Excel::import(new ParticipantImport, $request->file('file'));
+
+        return redirect()->route('participants.index')->with('success', 'Data Peserta berhasil diimpor!');
     }
 }

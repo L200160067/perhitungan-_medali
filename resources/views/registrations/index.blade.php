@@ -61,6 +61,7 @@
                             @endif
                         </form>
                         @role('admin')
+                        <a href="{{ route('registrations.import') }}" class="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 transition-colors duration-200 mr-2">Import Excel</a>
                         <a href="{{ route('registrations.create', request()->query()) }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors duration-200">+ Baru</a>
                         @endrole
                     </div>
