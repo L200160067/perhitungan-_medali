@@ -9,6 +9,11 @@ use Illuminate\Http\Response;
 
 class MedalController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Medal::class, 'medal');
+    }
+
     public function index()
     {
         $medals = Medal::query()->orderBy('rank')->get();

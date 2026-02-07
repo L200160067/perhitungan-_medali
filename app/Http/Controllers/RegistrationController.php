@@ -18,7 +18,9 @@ class RegistrationController extends Controller
 {
     public function __construct(
         protected RegistrationService $registrationService
-    ) {}
+    ) {
+        $this->authorizeResource(Registration::class, 'registration');
+    }
 
     public function index()
     {

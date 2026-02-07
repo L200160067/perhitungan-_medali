@@ -10,6 +10,11 @@ use Illuminate\Http\Response;
 
 class EventController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Event::class, 'event');
+    }
+
     public function index()
     {
         $perPage = request('per_page', 25);

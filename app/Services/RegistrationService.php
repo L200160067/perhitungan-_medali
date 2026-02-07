@@ -19,9 +19,24 @@ class RegistrationService
 
     public function update(Registration $registration, array $data): Registration
     {
-        $this->validateBusinessRules($data, $registration);
-        $registration->update($data);
-        return $registration;
+        return DB::transaction(function () use ($registration, $data) {
+            // 1. Resolve Category ID (from data or existing)
+            $categoryId = $data['category_id'] ?? $registration->category_id;
+            
+            // 2. Lock the Category to prevent race conditions during medal limit check
+            // This serializes updates for the same category
+            if ($categoryId) {
+                 TournamentCategory::where('id', $categoryId)->lockForUpdate()->first();
+            }
+
+            // 3. Validate Business Rules/Limits
+            $this->validateBusinessRules($data, $registration);
+
+            // 4. Perform Update
+            $registration->update($data);
+            
+            return $registration;
+        });
     }
 
     private function validateBusinessRules(array $data, ?Registration $registration = null): void

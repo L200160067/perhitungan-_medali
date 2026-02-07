@@ -11,6 +11,11 @@ use Illuminate\Http\Response;
 
 class ContingentController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Contingent::class, 'contingent');
+    }
+
     public function index()
     {
         $perPage = request('per_page', 25);

@@ -14,10 +14,13 @@
                         <input type="hidden" name="query_params[{{ $key }}]" value="{{ $value }}">
                     @endif
                 @endforeach
+                @php
+                    $isPanitia = auth()->user()->hasRole('panitia');
+                @endphp
                 <div class="space-y-6">
                     <div>
                         <label for="category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kategori Pertandingan <span class="text-red-500">*</span></label>
-                        <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('category_id') border-red-500 @enderror" required>
+                        <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('category_id') border-red-500 @enderror" required @disabled($isPanitia)>
                             @foreach($categories->groupBy('event_id') as $eventId => $eventCategories)
                                 <optgroup label="Pertandingan: {{ $eventCategories->first()->event->name ?? '#' . $eventId }}">
                                     @foreach($eventCategories as $category)
@@ -30,7 +33,7 @@
                     </div>
                     <div>
                         <label for="participant_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Peserta <span class="text-red-500">*</span></label>
-                        <select name="participant_id" id="participant_id" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('participant_id') border-red-500 @enderror" required>
+                        <select name="participant_id" id="participant_id" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('participant_id') border-red-500 @enderror" required @disabled($isPanitia)>
                             @foreach($participants as $participant)
                                 <option value="{{ $participant->id }}" {{ old('participant_id', $registration->participant_id) == $participant->id ? 'selected' : '' }}>{{ $participant->name }}</option>
                             @endforeach
@@ -39,7 +42,7 @@
                     </div>
                     <div>
                         <label for="contingent_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kontingen <span class="text-red-500">*</span></label>
-                        <select name="contingent_id" id="contingent_id" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('contingent_id') border-red-500 @enderror" required>
+                        <select name="contingent_id" id="contingent_id" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('contingent_id') border-red-500 @enderror" required @disabled($isPanitia)>
                             @foreach($contingents->groupBy('event_id') as $eventId => $eventContingents)
                                 <optgroup label="Pertandingan: {{ $eventContingents->first()->event->name ?? '#' . $eventId }}">
                                     @foreach($eventContingents as $contingent)

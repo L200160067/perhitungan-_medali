@@ -14,6 +14,11 @@ use Illuminate\Http\Response;
 
 class TournamentCategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(TournamentCategory::class, 'tournament_category');
+    }
+
     public function index()
     {
         $perPage = request('per_page', 25);

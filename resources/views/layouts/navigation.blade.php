@@ -15,6 +15,8 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    
+                    @role('admin')
                     <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')">
                         {{ __('Pertandingan') }}
                     </x-nav-link>
@@ -30,12 +32,17 @@
                     <x-nav-link :href="route('contingents.index')" :active="request()->routeIs('contingents.*')">
                         {{ __('Kontingen') }}
                     </x-nav-link>
+                    @endrole
+
                     <x-nav-link :href="route('registrations.index')" :active="request()->routeIs('registrations.*')">
                         {{ __('Pendaftaran') }}
                     </x-nav-link>
+
+                    @role('admin')
                     <x-nav-link :href="route('medals.index')" :active="request()->routeIs('medals.*')">
                         {{ __('Medali') }}
                     </x-nav-link>
+                    @endrole
                 </div>
             </div>
 
@@ -115,6 +122,8 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            
+            @role('admin')
             <x-responsive-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')">
                 {{ __('Pertandingan') }}
             </x-responsive-nav-link>
@@ -130,12 +139,17 @@
             <x-responsive-nav-link :href="route('contingents.index')" :active="request()->routeIs('contingents.*')">
                 {{ __('Kontingen') }}
             </x-responsive-nav-link>
+            @endrole
+
             <x-responsive-nav-link :href="route('registrations.index')" :active="request()->routeIs('registrations.*')">
                 {{ __('Pendaftaran') }}
             </x-responsive-nav-link>
+            
+            @role('admin')
             <x-responsive-nav-link :href="route('medals.index')" :active="request()->routeIs('medals.*')">
                 {{ __('Medali') }}
             </x-responsive-nav-link>
+            @endrole
         </div>
 
         <!-- Responsive Settings Options -->

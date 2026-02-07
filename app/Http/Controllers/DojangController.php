@@ -9,6 +9,11 @@ use Illuminate\Http\Response;
 
 class DojangController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Dojang::class, 'dojang');
+    }
+
     public function index()
     {
         $perPage = request('per_page', 25);

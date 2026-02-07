@@ -10,6 +10,11 @@ use Illuminate\Http\Response;
 
 class ParticipantController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Participant::class, 'participant');
+    }
+
     public function index()
     {
         $perPage = request('per_page', 25);

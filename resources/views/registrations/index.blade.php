@@ -60,7 +60,9 @@
                                 </a>
                             @endif
                         </form>
+                        @role('admin')
                         <a href="{{ route('registrations.create', request()->query()) }}" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors duration-200">+ Baru</a>
+                        @endrole
                     </div>
                 </div>
 
@@ -274,6 +276,7 @@
                     <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <a href="{{ route('registrations.show', $registration) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition">Lihat</a>
                         <a href="{{ route('registrations.edit', ['registration' => $registration] + request()->query()) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition">Edit</a>
+                        @role('admin')
                         <form action="{{ route('registrations.destroy', $registration) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin?');">
                             @csrf @method('DELETE')
                             @foreach(request()->only(['event_id', 'search', 'page', 'sort', 'direction', 'per_page']) as $key => $value)
@@ -281,6 +284,7 @@
                             @endforeach
                             <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition">Hapus</button>
                         </form>
+                        @endrole
                     </td>
                 </tr>
                 @empty
