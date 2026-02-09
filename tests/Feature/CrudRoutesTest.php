@@ -13,6 +13,9 @@ use App\Models\Registration;
 use App\Models\TournamentCategory;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
+
+uses(TestCase::class);
 
 beforeEach(function () {
     $user = User::factory()->create();
