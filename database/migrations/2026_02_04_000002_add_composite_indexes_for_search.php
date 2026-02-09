@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -10,9 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('CREATE INDEX IF NOT EXISTS participants_gender_name_idx ON participants (gender, name)');
-        DB::statement('CREATE INDEX IF NOT EXISTS tournament_categories_type_gender_idx ON tournament_categories (type, gender)');
-        DB::statement('CREATE INDEX IF NOT EXISTS registrations_category_status_idx ON registrations (category_id, status)');
+        Schema::table('participants', function (Blueprint $table) {
+            $table->index(['gender', 'name'], 'participants_gender_name_idx');
+        });
+
+        Schema::table('tournament_categories', function (Blueprint $table) {
+            $table->index(['type', 'gender'], 'tournament_categories_type_gender_idx');
+        });
+
+        Schema::table('registrations', function (Blueprint $table) {
+            $table->index(['category_id', 'status'], 'registrations_category_status_idx');
+        });
     }
 
     /**
@@ -20,8 +29,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('DROP INDEX IF EXISTS participants_gender_name_idx');
-        DB::statement('DROP INDEX IF EXISTS tournament_categories_type_gender_idx');
-        DB::statement('DROP INDEX IF EXISTS registrations_category_status_idx');
+        Schema::table('participants', function (Blueprint $table) {
+            $table->dropIndex('participants_gender_name_idx');
+        });
+
+        Schema::table('tournament_categories', function (Blueprint $table) {
+            $table->dropIndex('tournament_categories_type_gender_idx');
+        });
+
+        Schema::table('registrations', function (Blueprint $table) {
+            $table->dropIndex('registrations_category_status_idx');
+        });
     }
 };

@@ -145,4 +145,23 @@ class EventController extends Controller
             return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $ids = $request->input('ids', []);
+        
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        Event::whereIn('id', $ids)->delete();
+
+        // Capture query params for redirect
+        $queryParams = request()->except(['_token', '_method', 'ids']);
+        return redirect()->route('events.index', $queryParams)->with('success', count($ids) . ' Pertandingan berhasil dihapus!');
+    }
 }

@@ -190,4 +190,22 @@ class RegistrationController extends Controller
             return back()->withErrors(['file' => 'Terjadi kesalahan saat import: ' . $e->getMessage()]);
         }
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        Registration::whereIn('id', $ids)->delete();
+
+        $queryParams = request()->except(['_token', '_method', 'ids']);
+        return redirect()->route('registrations.index', $queryParams)->with('success', count($ids) . ' Pendaftaran berhasil dihapus!');
+    }
 }

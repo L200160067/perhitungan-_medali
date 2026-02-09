@@ -113,4 +113,22 @@ class DojangController extends Controller
 
         return redirect()->route('dojangs.index')->with('success', 'Data Dojang berhasil diimpor!');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        Dojang::whereIn('id', $ids)->delete();
+
+        $queryParams = request()->except(['_token', '_method', 'ids']);
+        return redirect()->route('dojangs.index', $queryParams)->with('success', count($ids) . ' Dojang berhasil dihapus!');
+    }
 }

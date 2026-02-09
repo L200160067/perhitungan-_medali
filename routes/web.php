@@ -26,24 +26,32 @@ Route::middleware('auth')->group(function () {
     
     Route::get('events/import', [EventController::class, 'import'])->name('events.import');
     Route::post('events/import', [EventController::class, 'storeImport'])->name('events.storeImport');
+    Route::delete('events/bulk-destroy', [EventController::class, 'bulkDestroy'])->name('events.bulkDestroy');
     Route::resource('events', EventController::class);
 
     Route::get('tournament-categories/import', [TournamentCategoryController::class, 'import'])->name('tournament-categories.import');
     Route::post('tournament-categories/import', [TournamentCategoryController::class, 'storeImport'])->name('tournament-categories.storeImport');
+    Route::delete('tournament-categories/bulk-destroy', [TournamentCategoryController::class, 'bulkDestroy'])->name('tournament-categories.bulkDestroy');
     Route::resource('tournament-categories', TournamentCategoryController::class);
     
     Route::get('dojangs/import', [DojangController::class, 'import'])->name('dojangs.import');
     Route::post('dojangs/import', [DojangController::class, 'storeImport'])->name('dojangs.storeImport');
+    Route::delete('dojangs/bulk-destroy', [DojangController::class, 'bulkDestroy'])->name('dojangs.bulkDestroy');
     Route::resource('dojangs', DojangController::class);
+
     Route::get('participant/import', [ParticipantController::class, 'import'])->name('participants.import');
     Route::post('participant/import', [ParticipantController::class, 'storeImport'])->name('participants.storeImport');
+    Route::delete('participants/bulk-destroy', [ParticipantController::class, 'bulkDestroy'])->name('participants.bulkDestroy');
     Route::resource('participants', ParticipantController::class);
     
     Route::get('contingents/import', [ContingentController::class, 'import'])->name('contingents.import');
     Route::post('contingents/import', [ContingentController::class, 'storeImport'])->name('contingents.storeImport');
+    Route::delete('contingents/bulk-destroy', [ContingentController::class, 'bulkDestroy'])->name('contingents.bulkDestroy');
     Route::resource('contingents', ContingentController::class);
+
     Route::get('registrations/import', [RegistrationController::class, 'import'])->name('registrations.import');
     Route::post('registrations/import', [RegistrationController::class, 'storeImport'])->name('registrations.storeImport');
+    Route::delete('registrations/bulk-destroy', [RegistrationController::class, 'bulkDestroy'])->name('registrations.bulkDestroy');
     Route::resource('registrations', RegistrationController::class);
     Route::resource('medals', MedalController::class);
 });

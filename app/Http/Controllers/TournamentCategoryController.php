@@ -153,4 +153,22 @@ class TournamentCategoryController extends Controller
 
         return redirect()->route('tournament-categories.index')->with('success', 'Data Kategori berhasil diimpor!');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        TournamentCategory::whereIn('id', $ids)->delete();
+
+        $queryParams = request()->except(['_token', '_method', 'ids']);
+        return redirect()->route('tournament-categories.index', $queryParams)->with('success', count($ids) . ' Kategori berhasil dihapus!');
+    }
 }

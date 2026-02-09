@@ -71,11 +71,51 @@
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden" x-data="{ 
+                    selected: [],
+                    count: 0,
+                    updateCount() {
+                        this.count = this.selected.length;
+                        const form = document.getElementById('bulk-delete-form');
+                        if(form) {
+                            form.querySelectorAll('input[name=\'ids[]\']').forEach(e => e.remove());
+                            this.selected.forEach(id => {
+                                const input = document.createElement('input');
+                                input.type = 'hidden';
+                                input.name = 'ids[]';
+                                input.value = id;
+                                form.appendChild(input);
+                            });
+                        }
+                    }
+                }">
+                    @role('admin')
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <form id="bulk-delete-form" action="{{ route('participants.bulkDestroy') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data yang dipilih?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed" 
+                                x-bind:disabled="count === 0">
+                                Hapus Terpilih (<span x-text="count"></span>)
+                            </button>
+                        </form>
+                    </div>
+                    @endrole
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
+                                    @role('admin')
+                                    <th class="px-6 py-3 text-left">
+                                        <input type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" 
+                                            @change="
+                                                $el.checked ? 
+                                                selected = [{{ $participants->pluck('id')->implode(',') }}] : 
+                                                selected = [];
+                                                updateCount();
+                                            ">
+                                    </th>
+                                    @endrole
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">No</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap">
                                         <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
@@ -147,6 +187,12 @@
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($participants as $participant)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                    @role('admin')
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" 
+                                            value="{{ $participant->id }}" x-model="selected" @change="updateCount()">
+                                    </td>
+                                    @endrole
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white min-w-[180px]">{{ $participant->name }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 min-w-[200px]">
@@ -177,7 +223,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                                         <p class="text-lg font-medium">Peserta tidak ditemukan</p>
                                     </td>
                                 </tr>

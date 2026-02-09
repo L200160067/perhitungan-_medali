@@ -153,4 +153,22 @@ class ContingentController extends Controller
 
         return redirect()->route('contingents.index')->with('success', 'Data Kontingen berhasil diimpor!');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        Contingent::whereIn('id', $ids)->delete();
+
+        $queryParams = request()->except(['_token', '_method', 'ids']);
+        return redirect()->route('contingents.index', $queryParams)->with('success', count($ids) . ' Kontingen berhasil dihapus!');
+    }
 }

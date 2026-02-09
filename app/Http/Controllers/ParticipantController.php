@@ -146,4 +146,22 @@ class ParticipantController extends Controller
 
         return redirect()->route('participants.index')->with('success', 'Data Peserta berhasil diimpor!');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        Participant::whereIn('id', $ids)->delete();
+
+        $queryParams = request()->except(['_token', '_method', 'ids']);
+        return redirect()->route('participants.index', $queryParams)->with('success', count($ids) . ' Peserta berhasil dihapus!');
+    }
 }

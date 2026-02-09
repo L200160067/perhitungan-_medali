@@ -109,12 +109,13 @@ class FestivalPrestasiTest extends TestCase
         $response = $this->actingAs($user)->get(route('dashboard'));
         
         // Should only see 1 gold in standings
-        $response->assertViewHas('medalStats', function ($stats) {
+        $response->assertViewHas('medalStandings', function ($stats) {
             // Check if there is an entry for 'Test Contingent'
-            $contingentStats = $stats->firstWhere('contingent_name', 'Test Contingent');
+            $contingentStats = $stats->firstWhere('name', 'Test Contingent');
             
             if (!$contingentStats) return false;
 
-            return $contingentStats->gold == 1 && $contingentStats->total == 1;
+            return $contingentStats->gold_count == 1 && $contingentStats->total_medals == 1;
         });
+    }
 }
