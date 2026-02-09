@@ -7,7 +7,7 @@ use App\Http\Requests\UpdateContingentRequest;
 use App\Models\Contingent;
 use App\Models\Dojang;
 use App\Models\Event;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 use App\Imports\ContingentImport;
 use Maatwebsite\Excel\Facades\Excel;

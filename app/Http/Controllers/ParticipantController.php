@@ -7,7 +7,7 @@ use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\UpdateParticipantRequest;
 use App\Models\Participant;
 use App\Models\Dojang;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 use App\Imports\ParticipantImport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -58,7 +58,7 @@ class ParticipantController extends Controller
 
     public function create()
     {
-        $dojangs = \App\Models\Dojang::all();
+        $dojangs = Dojang::all();
         $genders = ParticipantGender::cases();
 
         // Capture query params
@@ -93,7 +93,7 @@ class ParticipantController extends Controller
 
     public function edit(Participant $participant)
     {
-        $dojangs = \App\Models\Dojang::all();
+        $dojangs = Dojang::all();
         $genders = ParticipantGender::cases();
 
         // Capture query params

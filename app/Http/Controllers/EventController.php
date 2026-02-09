@@ -8,7 +8,7 @@ use App\Imports\EventImport;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class EventController extends Controller
 {

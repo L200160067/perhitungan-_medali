@@ -8,7 +8,7 @@ use App\Imports\DojangImport;
 use App\Models\Dojang;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class DojangController extends Controller
 {

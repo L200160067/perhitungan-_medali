@@ -12,7 +12,7 @@ use App\Models\Registration;
 use App\Models\TournamentCategory;
 use App\Services\RegistrationService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class RegistrationController extends Controller
 {

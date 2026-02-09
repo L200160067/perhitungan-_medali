@@ -10,7 +10,7 @@ use App\Http\Requests\StoreTournamentCategoryRequest;
 use App\Http\Requests\UpdateTournamentCategoryRequest;
 use App\Models\Event;
 use App\Models\TournamentCategory;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 use App\Imports\TournamentCategoryImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;

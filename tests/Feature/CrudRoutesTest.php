@@ -18,6 +18,7 @@ use Tests\TestCase;
 uses(TestCase::class);
 
 beforeEach(function () {
+    /** @var \Tests\TestCase $this */
     $user = User::factory()->create();
     $role = Role::firstOrCreate(['name' => 'admin']);
     $user->assignRole($role);
