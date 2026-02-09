@@ -11,6 +11,15 @@ use App\Models\Medal;
 use App\Models\Participant;
 use App\Models\Registration;
 use App\Models\TournamentCategory;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+
+beforeEach(function () {
+    $user = User::factory()->create();
+    $role = Role::firstOrCreate(['name' => 'admin']);
+    $user->assignRole($role);
+    $this->actingAs($user);
+});
 
 it('crud dojangs', function () {
     $create = $this->postJson('/dojangs', ['name' => 'Alpha Dojang']);
@@ -51,7 +60,7 @@ it('crud events', function () {
     $id = $create->json('id');
 
     $this->getJson("/events/{$id}")->assertOk();
-    $this->putJson("/events/{$id}", ['gold_point' => 7])->assertOk();
+    $this->putJson("/events/{$id}", ['name' => 'Test Event Updated', 'gold_point' => 7])->assertOk();
     $this->deleteJson("/events/{$id}")->assertNoContent();
 });
 
@@ -109,9 +118,10 @@ it('crud medals', function () {
 });
 
 it('crud registrations', function () {
-    $category = TournamentCategory::factory()->create();
-    $participant = Participant::factory()->create();
-    $contingent = Contingent::factory()->create();
+    $event = Event::factory()->create();
+    $category = TournamentCategory::factory()->create(['event_id' => $event->id]);
+    $participant = Participant::factory()->create(); // Dojang ID doesn't strictly matter for this test unless validated
+    $contingent = Contingent::factory()->create(['event_id' => $event->id]);
     $medal = Medal::factory()->gold()->create();
 
     $create = $this->postJson('/registrations', [

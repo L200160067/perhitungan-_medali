@@ -29,8 +29,12 @@ class FestivalPrestasiTest extends TestCase
 
     public function test_prestasi_category_enforces_gold_medal_limit()
     {
-        $category = TournamentCategory::factory()->prestasi()->create();
-        $contingent = Contingent::factory()->create();
+        $user = \App\Models\User::factory()->create();
+        $user->assignRole(\Spatie\Permission\Models\Role::create(['name' => 'admin']));
+
+        $event = \App\Models\Event::factory()->create(); // Ensure event exists
+        $category = TournamentCategory::factory()->prestasi()->create(['event_id' => $event->id]);
+        $contingent = Contingent::factory()->create(['event_id' => $event->id]);
 
         // Assign first gold
         Registration::factory()->create([
@@ -40,9 +44,10 @@ class FestivalPrestasiTest extends TestCase
         ]);
 
         // Attempt second gold
-        $response = $this->post(route('registrations.store'), [
+        $response = $this->actingAs($user)->post(route('registrations.store'), [
             'category_id' => $category->id,
-            'contingent_id' => $contingent->id,
+            'contingent_id' => $contingent->id, // Must match
+            'participant_id' => \App\Models\Participant::factory()->create()->id, // Needed for new reg
             'medal_id' => $this->gold->id,
             'status' => RegistrationStatus::Competed->value,
         ]);
@@ -53,14 +58,19 @@ class FestivalPrestasiTest extends TestCase
 
     public function test_festival_category_allows_multiple_gold_medals()
     {
-        $category = TournamentCategory::factory()->festival()->create();
-        $contingent = Contingent::factory()->create();
+        $user = \App\Models\User::factory()->create();
+        $user->assignRole(\Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin']));
+
+        $event = \App\Models\Event::factory()->create();
+        $category = TournamentCategory::factory()->festival()->create(['event_id' => $event->id]);
+        $contingent = Contingent::factory()->create(['event_id' => $event->id]);
 
         // Assign multiple golds
         for ($i = 0; $i < 5; $i++) {
-            $this->post(route('registrations.store'), [
+            $this->actingAs($user)->post(route('registrations.store'), [
                 'category_id' => $category->id,
                 'contingent_id' => $contingent->id,
+                'participant_id' => \App\Models\Participant::factory()->create()->id,
                 'medal_id' => $this->gold->id,
                 'status' => RegistrationStatus::Competed->value,
             ]);
@@ -71,10 +81,14 @@ class FestivalPrestasiTest extends TestCase
 
     public function test_dashboard_only_counts_prestasi_medals()
     {
-        $contingent = Contingent::factory()->create(['name' => 'Test Contingent']);
+        $user = \App\Models\User::factory()->create();
+        $user->assignRole(\Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin']));
+
+        $event = \App\Models\Event::factory()->create();
+        $contingent = Contingent::factory()->create(['name' => 'Test Contingent', 'event_id' => $event->id]);
         
-        $prestasiCategory = TournamentCategory::factory()->prestasi()->create();
-        $festivalCategory = TournamentCategory::factory()->festival()->create();
+        $prestasiCategory = TournamentCategory::factory()->prestasi()->create(['event_id' => $event->id]);
+        $festivalCategory = TournamentCategory::factory()->festival()->create(['event_id' => $event->id]);
 
         // Award 1 gold in Prestasi
         Registration::factory()->create([
@@ -92,11 +106,15 @@ class FestivalPrestasiTest extends TestCase
             ]);
         }
 
-        $response = $this->get(route('dashboard'));
+        $response = $this->actingAs($user)->get(route('dashboard'));
         
         // Should only see 1 gold in standings
-        $response->assertSee('Test Contingent');
-        $response->assertSee('1</td>', false); // Gold count text
-        $response->assertDontSee('11</td>', false); // Total medals text
-    }
+        $response->assertViewHas('medalStats', function ($stats) {
+            // Check if there is an entry for 'Test Contingent'
+            $contingentStats = $stats->firstWhere('contingent_name', 'Test Contingent');
+            
+            if (!$contingentStats) return false;
+
+            return $contingentStats->gold == 1 && $contingentStats->total == 1;
+        });
 }

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Dashboard">
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight mb-4 sm:mb-0">
@@ -25,22 +25,22 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <!-- Total Events -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Total Event</div>
+                    <div class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">{{ __('Total Event') }}</div>
                     <div class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{{ $totalEvents }}</div>
                 </div>
                 <!-- Total Dojang -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Total Dojang</div>
+                    <div class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">{{ __('Total Dojang') }}</div>
                     <div class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{{ $totalDojangs }}</div>
                 </div>
                 <!-- Total Participants -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Total Peserta</div>
+                    <div class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">{{ __('Total Peserta') }}</div>
                     <div class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{{ $totalParticipants }}</div>
                 </div>
                 <!-- Total Registrations -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Total Pendaftaran</div>
+                    <div class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase tracking-wider">{{ __('Total Pendaftaran') }}</div>
                     <div class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{{ $totalRegistrations }}</div>
                 </div>
             </div>
@@ -49,22 +49,22 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                        Klasemen Medali - {{ $activeEvent ? $activeEvent->name : 'Semua Event' }}
+                        {{ __('Klasemen Medali') }} - {{ $activeEvent ? $activeEvent->name : __('Semua Event') }}
                     </h3>
 
                     @if($medalStandings->isEmpty())
-                        <p class="text-gray-500 dark:text-gray-400 text-center py-4">Belum ada data perolehan medali untuk event ini.</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-center py-4">{{ __('Belum ada data perolehan medali untuk event ini.') }}</p>
                     @else
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-900">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Peringkat</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kontingen / Dojang</th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-yellow-600 dark:text-yellow-400 uppercase tracking-wider">Emas</th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">Perak</th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wider">Perunggu</th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Peringkat') }}</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Kontingen / Dojang') }}</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-yellow-600 dark:text-yellow-400 uppercase tracking-wider">{{ __('Emas') }}</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">{{ __('Perak') }}</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wider">{{ __('Perunggu') }}</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Total') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">

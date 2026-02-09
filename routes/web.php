@@ -43,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::post('contingents/import', [ContingentController::class, 'storeImport'])->name('contingents.storeImport');
     Route::resource('contingents', ContingentController::class);
     Route::get('registrations/import', [RegistrationController::class, 'import'])->name('registrations.import');
-    Route::post('registrations/import', [RegistrationController::class, 'storeImport'])->name('registrations.import.store');
+    Route::post('registrations/import', [RegistrationController::class, 'storeImport'])->name('registrations.storeImport');
     Route::resource('registrations', RegistrationController::class);
     Route::resource('medals', MedalController::class);
 });
