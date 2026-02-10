@@ -101,12 +101,12 @@
                         </form>
                     </div>
                     @endrole
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto max-h-[calc(100vh-200px)] overflow-y-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     @role('admin')
-                                    <th class="px-6 py-3 text-left">
+                                    <th class="px-6 py-3 text-left sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
                                         <input type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" 
                                             @change="
                                                 $el.checked ? 
@@ -116,8 +116,8 @@
                                             ">
                                     </th>
                                     @endrole
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">No</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap">
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">No</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
                                         <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                                             Nama
                                             <span class="ml-2 flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'name' ? 'visible' : 'invisible group-hover:visible' }}">
@@ -133,7 +133,7 @@
                                             </span>
                                         </a>
                                     </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap">
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
                                         <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'dojang', 'direction' => $sort === 'dojang' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                                             Dojang
                                             <span class="ml-2 flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'dojang' ? 'visible' : 'invisible group-hover:visible' }}">
@@ -149,7 +149,7 @@
                                             </span>
                                         </a>
                                     </th>
-                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap">
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
                                         <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'gender', 'direction' => $sort === 'gender' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                                             Jenis Kelamin
                                             <span class="ml-2 flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'gender' ? 'visible' : 'invisible group-hover:visible' }}">
@@ -165,7 +165,7 @@
                                             </span>
                                         </a>
                                     </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap">
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
                                         <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'birth_date', 'direction' => $sort === 'birth_date' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
                                             Tanggal Lahir
                                             <span class="ml-2 flex-none rounded text-gray-400 group-hover:visible {{ $sort === 'birth_date' ? 'visible' : 'invisible group-hover:visible' }}">
@@ -181,7 +181,7 @@
                                             </span>
                                         </a>
                                     </th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aksi</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
