@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMedalRequest;
 use App\Http\Requests\UpdateMedalRequest;
 use App\Models\Medal;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class MedalController extends Controller
 {
