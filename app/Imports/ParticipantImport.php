@@ -2,7 +2,7 @@
 
 namespace App\Imports;
 
-use App\Enums\TournamentGender;
+use App\Enums\ParticipantGender;
 use App\Models\Dojang;
 use App\Models\Participant;
 use Maatwebsite\Excel\Concerns\OnEachRow;
@@ -67,8 +67,8 @@ class ParticipantImport implements OnEachRow, WithValidation, WithHeadingRow, Wi
     private function mapGender($value)
     {
         $value = strtolower($value);
-        if ($value === 'p' || $value === 'f' || $value === 'female' || $value === 'perempuan') return TournamentGender::Female;
-        return TournamentGender::Male;
+        if ($value === 'p' || $value === 'f' || $value === 'female' || $value === 'perempuan') return ParticipantGender::Female;
+        return ParticipantGender::Male;
     }
 
     public function rules(): array

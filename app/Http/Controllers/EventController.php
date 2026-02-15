@@ -120,19 +120,13 @@ class EventController extends Controller
         ]);
 
         try {
-            \Illuminate\Support\Facades\Log::info('Starting Event Import via Controller');
-            \Illuminate\Support\Facades\Log::info('File details:', [
-                'original_name' => $request->file('file')->getClientOriginalName(),
-                'mime_type' => $request->file('file')->getMimeType(),
-                'path' => $request->file('file')->getPathname(),
-                'size' => $request->file('file')->getSize(),
-            ]);
+
 
             // Force Xlsx reader if file extension is xlsx, or auto detect
             // Sometimes auto detection fails with streams.
             Excel::import(new EventImport, $request->file('file'));
             
-            \Illuminate\Support\Facades\Log::info('Event Import Completed Successfully');
+
             return redirect()->route('events.index')->with('success', 'Data Pertandingan berhasil diimpor!');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();

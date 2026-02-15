@@ -21,8 +21,7 @@ class EventImport implements OnEachRow, WithValidation, WithHeadingRow, WithChun
         $rowIndex = $row->getIndex();
         $row      = $row->toArray();
 
-        // Debug Log
-        \Illuminate\Support\Facades\Log::info('Event Import Row ' . $rowIndex . ':', $row);
+
 
         if (empty($row['nama_pertandingan'])) {
             return;
