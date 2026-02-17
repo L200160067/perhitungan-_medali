@@ -15,7 +15,7 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
-uses(TestCase::class);
+
 
 beforeEach(function () {
     /** @var \Tests\TestCase $this */
