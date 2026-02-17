@@ -20,14 +20,25 @@
 
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Peserta</h2>
-                <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex-shrink-0">
+                        @if($participant->photo)
+                            <img src="{{ asset('storage/' . $participant->photo) }}" alt="{{ $participant->name }}" class="w-48 h-64 object-cover rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                        @else
+                            <div class="w-48 h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-500">
+                                <span class="text-sm">Tidak ada foto</span>
+                            </div>
+                        @endif
+                    </div>
+                    <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 flex-grow">
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">ID</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $participant->id }}</dd></div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Nama</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">{{ $participant->name }}</dd></div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Dojang</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100"><a href="{{ route('dojangs.show', $participant->dojang) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">{{ $participant->dojang->name }}</a></dd></div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Jenis Kelamin</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $participant->gender->label() }}</dd></div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Tanggal Lahir</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $participant->birth_date->format('d M Y') }}</dd></div>
                     <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Usia</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $participant->birth_date->age }} tahun</dd></div>
-                </dl>
+                    </dl>
+                </div>
             </div>
         </div>
     </div>

@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use App\Imports\ParticipantImport;
 use Maatwebsite\Excel\Facades\Excel;
 
+use Illuminate\Support\Facades\Storage;
+
 class ParticipantController extends Controller
 {
     public function __construct()
@@ -69,7 +71,14 @@ class ParticipantController extends Controller
 
     public function store(StoreParticipantRequest $request)
     {
-        $participant = Participant::query()->create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('participants-photos', 'public');
+            $data['photo'] = $path;
+        }
+
+        $participant = Participant::query()->create($data);
 
         if (request()->expectsJson()) {
             return response()->json($participant, Response::HTTP_CREATED);
@@ -104,7 +113,18 @@ class ParticipantController extends Controller
 
     public function update(UpdateParticipantRequest $request, Participant $participant)
     {
-        $participant->update($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($participant->photo) {
+                Storage::disk('public')->delete($participant->photo);
+            }
+            $path = $request->file('photo')->store('participants-photos', 'public');
+            $data['photo'] = $path;
+        }
+
+        $participant->update($data);
 
         if (request()->expectsJson()) {
             return response()->json($participant);
@@ -117,6 +137,10 @@ class ParticipantController extends Controller
 
     public function destroy(Participant $participant)
     {
+        if ($participant->photo) {
+            Storage::disk('public')->delete($participant->photo);
+        }
+
         $participant->delete();
 
         if (request()->expectsJson()) {
@@ -159,7 +183,13 @@ class ParticipantController extends Controller
             return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
         }
 
-        Participant::whereIn('id', $ids)->delete();
+        $participants = Participant::whereIn('id', $ids)->get();
+        foreach ($participants as $participant) {
+             if ($participant->photo) {
+                Storage::disk('public')->delete($participant->photo);
+            }
+            $participant->delete();
+        }
 
         $queryParams = request()->except(['_token', '_method', 'ids']);
         return redirect()->route('participants.index', $queryParams)->with('success', count($ids) . ' Peserta berhasil dihapus!');

@@ -27,6 +27,7 @@ class UpdateParticipantRequest extends FormRequest
                 Rule::in($genderValues),
             ],
             'birth_date' => 'sometimes|required|date',
+            'photo' => 'nullable|image|mimes:jpg,jpeg|max:2048|dimensions:ratio=0.75',
         ];
     }
 }

@@ -116,6 +116,7 @@
                                             ">
                                     </th>
                                     @endrole
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">Foto</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">No</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-nowrap sticky top-0 z-10 bg-gray-50 dark:bg-gray-700">
                                         <a href="{{ request()->fullUrlWithQuery(['search' => $search, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc', 'page' => 1]) }}" class="group inline-flex items-center gap-1">
@@ -193,6 +194,13 @@
                                             value="{{ $participant->id }}" x-model="selected" @change="updateCount()">
                                     </td>
                                     @endrole
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($participant->photo)
+                                            <img src="{{ asset('storage/' . $participant->photo) }}" alt="Foto" class="h-10 w-8 object-cover rounded">
+                                        @else
+                                            <span class="inline-block h-10 w-8 rounded bg-gray-200 dark:bg-gray-700"></span>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white min-w-[180px]">{{ $participant->name }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 min-w-[200px]">
