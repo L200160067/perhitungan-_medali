@@ -19,6 +19,7 @@ class Participant extends Model
         'name',
         'gender',
         'birth_date',
+        'photo',
     ];
 
     /**
