@@ -20,8 +20,11 @@ class EventController extends Controller
     public function index()
     {
         $perPage = request('per_page', 25);
-        $sort = request('sort', 'start_date');
-        $direction = request('direction', 'desc');
+
+        $allowedSorts = ['name', 'start_date', 'end_date', 'created_at'];
+        $sort = in_array(request('sort'), $allowedSorts) ? request('sort') : 'start_date';
+        $direction = in_array(request('direction'), ['asc', 'desc']) ? request('direction') : 'desc';
+
         $search = request('search');
 
         $query = Event::query();

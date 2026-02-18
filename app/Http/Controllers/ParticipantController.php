@@ -24,8 +24,11 @@ class ParticipantController extends Controller
     public function index()
     {
         $perPage = request('per_page', 25);
-        $sort = request('sort', 'name');
-        $direction = request('direction', 'asc');
+
+        $allowedSorts = ['name', 'dojang', 'gender', 'created_at'];
+        $sort = in_array(request('sort'), $allowedSorts) ? request('sort') : 'name';
+        $direction = in_array(request('direction'), ['asc', 'desc']) ? request('direction') : 'asc';
+
         $search = request('search');
 
         $query = Participant::query()->with('dojang');

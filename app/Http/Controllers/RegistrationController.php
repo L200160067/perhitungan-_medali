@@ -25,11 +25,14 @@ class RegistrationController extends Controller
     public function index()
     {
         $perPage = request('per_page', 25);
-        $sort = request('sort', 'created_at');
-        $direction = request('direction', 'desc');
+
+        $allowedSorts = ['created_at', 'category', 'type', 'participant', 'contingent', 'medal', 'status'];
+        $sort = in_array(request('sort'), $allowedSorts) ? request('sort') : 'created_at';
+        $direction = in_array(request('direction'), ['asc', 'desc']) ? request('direction') : 'desc';
+
         $eventId = request('event_id');
         $search = request('search');
-        
+
         $events = \App\Models\Event::all();
 
         $query = Registration::query()
