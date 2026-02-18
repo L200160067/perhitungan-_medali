@@ -116,57 +116,177 @@
                     </div>
                 </div>
 
-                <!-- Event Selector UI -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <a href="{{ route('registrations.index') }}"
-                        class="relative flex flex-col p-4 rounded-xl border-2 transition-all duration-200 group {{ !$eventId ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md' }}">
-                        <div class="flex items-center justify-between mb-2">
-                            <span
-                                class="text-sm font-bold uppercase tracking-wider {{ !$eventId ? 'text-blue-700 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400' }}">Semua
-                                Event</span>
-                            @if(!$eventId)
-                                <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            @endif
-                        </div>
-                        <p
-                            class="text-xs {{ !$eventId ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400' }}">
-                            Tampilkan semua data pendaftaran</p>
-                    </a>
+                <!-- Event Selector UI - Hybrid: Dropdown + Pills -->
+                <div x-data="{
+                    open: false,
+                    search: '',
+                    showScrollHint: false,
+                    get filteredEvents() {
+                        if (!this.search) return this.allEvents;
+                        const s = this.search.toLowerCase();
+                        return this.allEvents.filter(e => e.name.toLowerCase().includes(s));
+                    },
+                    allEvents: [
+                        @foreach($events as $event)
+                            { id: {{ $event->id }}, name: '{{ addslashes($event->name) }}', date: '{{ $event->start_date->format('d M Y') }} - {{ $event->end_date->format('d M Y') }}', locked: {{ $event->is_locked ? 'true' : 'false' }} },
+                        @endforeach
+                    ]
+                }"
+                    x-init="$nextTick(() => { showScrollHint = $refs.scroller && $refs.scroller.scrollWidth > $refs.scroller.clientWidth })">
 
-                    @foreach($events as $event)
-                        <a href="{{ route('registrations.index', ['event_id' => $event->id]) }}"
-                            class="relative flex flex-col p-4 rounded-xl border-2 transition-all duration-200 group {{ $eventId == $event->id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md' }}">
-                            <div class="flex items-center justify-between mb-2">
-                                <span
-                                    class="text-sm font-bold uppercase tracking-wider {{ $eventId == $event->id ? 'text-blue-700 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400' }} truncate">{{ $event->name }}</span>
-                                @if($event->is_locked)
-                                    <span
-                                        class="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-900/30 dark:text-red-400">🔒</span>
-                                @endif
-                                @if($eventId == $event->id)
-                                    <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="currentColor"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd" />
+                    <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center mb-3">
+                        <!-- Dropdown Selector -->
+                        <div class="relative w-full sm:w-80" @click.away="open = false">
+                            <button @click="open = !open; $nextTick(() => { if(open) $refs.searchInput.focus() })"
+                                type="button"
+                                class="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all duration-200"
+                                :class="open
+                                    ? 'border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ring-1 ring-blue-500 shadow-md'
+                                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-sm'">
+                                <div class="flex items-center gap-2 truncate">
+                                    <svg class="h-4 w-4 flex-shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
-                                @endif
-                            </div>
-                            <div
-                                class="flex items-center gap-2 text-xs {{ $eventId == $event->id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400' }}">
-                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <span class="truncate">
+                                        @if($eventId && $events->find($eventId))
+                                            @if($events->find($eventId)->is_locked) 🔒 @endif
+                                            {{ $events->find($eventId)->name }}
+                                        @else
+                                            Semua Event
+                                        @endif
+                                    </span>
+                                </div>
+                                <svg class="h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200"
+                                    :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        d="M19 9l-7 7-7-7" />
                                 </svg>
-                                {{ $event->start_date->format('d M Y') }} - {{ $event->end_date->format('d M Y') }}
+                            </button>
+
+                            <!-- Dropdown Panel -->
+                            <div x-show="open" x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 -translate-y-1"
+                                class="absolute z-50 mt-2 w-full rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl overflow-hidden"
+                                style="display: none;">
+
+                                <!-- Search inside dropdown -->
+                                <div class="p-2 border-b border-gray-100 dark:border-gray-700">
+                                    <div class="relative">
+                                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                        <input x-ref="searchInput" x-model="search" type="text"
+                                            placeholder="Cari event..."
+                                            class="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                            @keydown.escape="open = false" />
+                                    </div>
+                                </div>
+
+                                <!-- Dropdown Items -->
+                                <div class="max-h-64 overflow-y-auto">
+                                    <!-- "Semua Event" option -->
+                                    <a href="{{ route('registrations.index') }}"
+                                        class="flex items-center gap-3 px-4 py-3 text-sm transition-colors {{ !$eventId ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50' }}">
+                                        <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                        </svg>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="font-semibold">Semua Event</div>
+                                            <div class="text-xs opacity-60">Tampilkan semua data pendaftaran</div>
+                                        </div>
+                                        @if(!$eventId)
+                                            <svg class="h-4 w-4 text-blue-500 flex-shrink-0" fill="currentColor"
+                                                viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        @endif
+                                    </a>
+
+                                    <div class="border-t border-gray-100 dark:border-gray-700"></div>
+
+                                    <!-- Event options -->
+                                    <template x-for="event in filteredEvents" :key="event.id">
+                                        <a :href="'{{ route('registrations.index') }}?event_id=' + event.id"
+                                            class="flex items-center gap-3 px-4 py-3 text-sm transition-colors"
+                                            :class="event.id == {{ $eventId ?? 'null' }}
+                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-semibold'
+                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'">
+                                            <span x-show="event.locked" class="text-xs flex-shrink-0">🔒</span>
+                                            <svg x-show="!event.locked" class="h-4 w-4 flex-shrink-0 opacity-40"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="font-semibold truncate" x-text="event.name"></div>
+                                                <div class="text-xs opacity-60" x-text="event.date"></div>
+                                            </div>
+                                            <svg x-show="event.id == {{ $eventId ?? 'null' }}"
+                                                class="h-4 w-4 text-blue-500 flex-shrink-0" fill="currentColor"
+                                                viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </a>
+                                    </template>
+
+                                    <!-- No results -->
+                                    <div x-show="filteredEvents.length === 0"
+                                        class="px-4 py-6 text-sm text-center text-gray-400">
+                                        Tidak ada event ditemukan
+                                    </div>
+                                </div>
                             </div>
-                        </a>
-                    @endforeach
+                        </div>
+
+                        <!-- Event count badge -->
+                        <span
+                            class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                            {{ $events->count() }} event
+                        </span>
+                    </div>
+
+                    <!-- Quick-switch Pills (horizontal scroll) -->
+                    <div class="relative">
+                        <div x-show="showScrollHint"
+                            class="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-gray-100 dark:from-gray-900 to-transparent z-10 pointer-events-none rounded-r-xl">
+                        </div>
+
+                        <div x-ref="scroller"
+                            class="flex gap-2 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory"
+                            style="-ms-overflow-style: none; scrollbar-width: thin;"
+                            x-init="$nextTick(() => { const active = $refs.scroller.querySelector('[data-active]'); if (active) active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }) })">
+
+                            <!-- "Semua" pill -->
+                            <a href="{{ route('registrations.index') }}" @if(!$eventId) data-active @endif
+                                class="snap-start flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-200 whitespace-nowrap text-xs font-medium {{ !$eventId ? 'border-blue-500 bg-blue-500 text-white shadow-sm' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:border-blue-300 hover:text-blue-600' }}">
+                                Semua
+                            </a>
+
+                            @foreach($events as $event)
+                                <a href="{{ route('registrations.index', ['event_id' => $event->id]) }}"
+                                    @if($eventId == $event->id) data-active @endif
+                                    class="snap-start flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-200 whitespace-nowrap text-xs font-medium {{ $eventId == $event->id ? 'border-blue-500 bg-blue-500 text-white shadow-sm' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:border-blue-300 hover:text-blue-600' }}">
+                                    @if($event->is_locked) 🔒 @endif
+                                    {{ Str::limit($event->name, 25) }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
 
                 @if($eventId && ($activeEvent = $events->find($eventId)))
