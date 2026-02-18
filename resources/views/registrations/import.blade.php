@@ -14,9 +14,12 @@
                         <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
                             <li>Gunakan file Excel (.xlsx, .xls) atau CSV.</li>
                             <li>Pastikan baris pertama adalah header (nama kolom).</li>
-                            <li>Header kolom: <strong>event_name</strong>, <strong>category_name</strong>,
-                                <strong>participant_name</strong>, <strong>contingent_name</strong>,
-                                <strong>dojang_name</strong>.</li>
+                            <li>Kolom yang wajib ada: <strong>nama_pertandingan</strong>,
+                                <strong>nama_kategori</strong>,
+                                <strong>nama_peserta</strong>, <strong>nama_kontingen</strong>,
+                                <strong>nama_dojang</strong>.
+                            </li>
+                            <li>Kolom opsional: <strong>jenis_kelamin</strong> (L/P, default: L jika kosong).</li>
                             <li>Sistem akan otomatis membuat Peserta, Kontingen dan Dojang jika belum ada.</li>
                             <li>Pastikan nama Pertandingan dan Kategori sudah ada di sistem dan sesuai persis.</li>
                         </ul>
