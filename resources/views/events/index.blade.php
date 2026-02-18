@@ -180,6 +180,9 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                                         {{ $event->name }}
+                                        @if($event->is_locked)
+                                            <span class="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-900/30 dark:text-red-400">🔒 Dikunci</span>
+                                        @endif
                                         @if($event->count_festival_medals)
                                             <span class="ml-2 inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400">Termasuk Festival</span>
                                         @else
@@ -193,8 +196,17 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900 dark:text-gray-300">{{ $event->bronze_point ?? 1 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                         <a href="{{ route('events.show', $event) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition">Lihat</a>
+                                        @if(!$event->is_locked)
                                         <a href="{{ route('events.edit', ['event' => $event] + request()->query()) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition">Edit</a>
+                                        @endif
                                         @role('admin')
+                                        <form action="{{ route('events.toggleLock', $event) }}" method="POST" class="inline">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="{{ $event->is_locked ? 'text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300' : 'text-yellow-600 dark:text-yellow-400 hover:text-yellow-900 dark:hover:text-yellow-300' }} transition" title="{{ $event->is_locked ? 'Buka Kunci' : 'Kunci' }}">
+                                                {{ $event->is_locked ? '🔓 Buka' : '🔒 Kunci' }}
+                                            </button>
+                                        </form>
+                                        @if(!$event->is_locked)
                                         <form action="{{ route('events.destroy', $event) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin?');">
                                             @csrf @method('DELETE')
                                             @foreach(request()->only(['search', 'page', 'sort', 'direction', 'per_page']) as $key => $value)
@@ -202,6 +214,7 @@
                                             @endforeach
                                             <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition">Hapus</button>
                                         </form>
+                                        @endif
                                         @endrole
                                     </td>
                                 </tr>

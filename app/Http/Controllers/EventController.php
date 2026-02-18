@@ -161,4 +161,18 @@ class EventController extends Controller
         $queryParams = request()->except(['_token', '_method', 'ids']);
         return redirect()->route('events.index', $queryParams)->with('success', count($ids) . ' Pertandingan berhasil dihapus!');
     }
+
+    public function toggleLock(Event $event)
+    {
+        $this->authorize('update', $event);
+
+        $event->update(['is_locked' => !$event->is_locked]);
+
+        if (request()->expectsJson()) {
+            return response()->json($event);
+        }
+
+        $status = $event->is_locked ? 'dikunci' : 'dibuka kuncinya';
+        return redirect()->back()->with('success', "Pertandingan berhasil {$status}!");
+    }
 }

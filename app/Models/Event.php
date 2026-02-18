@@ -21,6 +21,7 @@ class Event extends Model
         'silver_point',
         'bronze_point',
         'count_festival_medals',
+        'is_locked',
     ];
 
     /**
@@ -51,6 +52,7 @@ class Event extends Model
             'silver_point' => 'integer',
             'bronze_point' => 'integer',
             'count_festival_medals' => 'boolean',
+            'is_locked' => 'boolean',
         ];
     }
 }

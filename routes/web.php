@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('events/import', [EventController::class, 'import'])->name('events.import');
     Route::post('events/import', [EventController::class, 'storeImport'])->name('events.storeImport');
     Route::delete('events/bulk-destroy', [EventController::class, 'bulkDestroy'])->name('events.bulkDestroy');
+    Route::patch('events/{event}/toggle-lock', [EventController::class, 'toggleLock'])->name('events.toggleLock');
     Route::resource('events', EventController::class);
 
     Route::get('tournament-categories/import', [TournamentCategoryController::class, 'import'])->name('tournament-categories.import');

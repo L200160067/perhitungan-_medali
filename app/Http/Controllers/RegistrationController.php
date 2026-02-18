@@ -7,6 +7,7 @@ use App\Http\Requests\StoreRegistrationRequest;
 use App\Http\Requests\UpdateRegistrationRequest;
 use App\Imports\RegistrationImport;
 use App\Models\Contingent;
+use App\Models\Event;
 use App\Models\Medal;
 use App\Models\Participant;
 use App\Models\Registration;
@@ -38,7 +39,7 @@ class RegistrationController extends Controller
         $events = \App\Models\Event::all();
 
         $query = Registration::query()
-            ->with(['category', 'participant', 'contingent', 'medal']);
+            ->with(['category.event', 'participant', 'contingent', 'medal']);
 
         // Filtering
         if ($eventId) {
@@ -110,8 +111,30 @@ class RegistrationController extends Controller
         return view('registrations.create', compact('categories', 'participants', 'contingents', 'medals', 'statuses', 'queryParams'));
     }
 
+    /**
+     * Check if the event related to a registration/category is locked.
+     */
+    private function isEventLocked(?int $categoryId): bool
+    {
+        if (!$categoryId) {
+            return false;
+        }
+
+        $category = TournamentCategory::find($categoryId);
+        if (!$category) {
+            return false;
+        }
+
+        $event = Event::find($category->event_id);
+        return $event && $event->is_locked;
+    }
+
     public function store(StoreRegistrationRequest $request)
     {
+        if ($this->isEventLocked($request->input('category_id'))) {
+            return redirect()->back()->withInput()->with('error', 'Pertandingan sudah dikunci. Tidak dapat menambah pendaftaran baru.');
+        }
+
         $registration = $this->registrationService->create($request->validated());
 
         if (request()->expectsJson()) {
@@ -125,7 +148,7 @@ class RegistrationController extends Controller
 
     public function show(Registration $registration)
     {
-        $registration->load(['category', 'participant', 'contingent', 'medal']);
+        $registration->load(['category.event', 'participant', 'contingent', 'medal']);
 
         if (request()->expectsJson()) {
             return response()->json($registration);
@@ -150,6 +173,10 @@ class RegistrationController extends Controller
 
     public function update(UpdateRegistrationRequest $request, Registration $registration)
     {
+        if ($this->isEventLocked($registration->category_id)) {
+            return redirect()->back()->withInput()->with('error', 'Pertandingan sudah dikunci. Tidak dapat mengubah data pendaftaran.');
+        }
+
         $this->registrationService->update($registration, $request->validated());
 
         if (request()->expectsJson()) {
@@ -163,6 +190,10 @@ class RegistrationController extends Controller
 
     public function destroy(Registration $registration)
     {
+        if ($this->isEventLocked($registration->category_id)) {
+            return redirect()->back()->with('error', 'Pertandingan sudah dikunci. Tidak dapat menghapus pendaftaran.');
+        }
+
         $registration->delete();
 
         if (request()->expectsJson()) {

@@ -8,35 +8,104 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex justify-between items-center">
-                <a href="{{ route('events.index') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm transition">← Kembali ke Pertandingan</a>
-                <div class="space-x-2">
-                    <a href="{{ route('events.edit', $event) }}" class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:visible:outline focus:visible:outline-2 focus:visible:outline-offset-2 focus:visible:outline-blue-600 transition">Edit</a>
-                    <form action="{{ route('events.destroy', $event) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin?');">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus:visible:outline focus:visible:outline-2 focus:visible:outline-offset-2 focus:visible:outline-red-600 transition">Hapus</button>
+                <a href="{{ route('events.index') }}"
+                    class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm transition">←
+                    Kembali ke Pertandingan</a>
+                <div class="space-x-2 flex items-center">
+                    @role('admin')
+                    <form action="{{ route('events.toggleLock', $event) }}" method="POST" class="inline">
+                        @csrf @method('PATCH')
+                        <button type="submit"
+                            class="inline-flex items-center rounded-md {{ $event->is_locked ? 'bg-green-600 hover:bg-green-500' : 'bg-yellow-600 hover:bg-yellow-500' }} px-4 py-2 text-sm font-semibold text-white shadow-sm transition">
+                            {{ $event->is_locked ? '🔓 Buka Kunci' : '🔒 Kunci Pertandingan' }}
+                        </button>
                     </form>
+                    @endrole
+                    @if(!$event->is_locked)
+                        <a href="{{ route('events.edit', $event) }}"
+                            class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:visible:outline focus:visible:outline-2 focus:visible:outline-offset-2 focus:visible:outline-blue-600 transition">Edit</a>
+                        <form action="{{ route('events.destroy', $event) }}" method="POST" class="inline"
+                            onsubmit="return confirm('Apakah Anda yakin?');">
+                            @csrf @method('DELETE')
+                            <button type="submit"
+                                class="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus:visible:outline focus:visible:outline-2 focus:visible:outline-offset-2 focus:visible:outline-red-600 transition">Hapus</button>
+                        </form>
+                    @endif
                 </div>
             </div>
+
+            @if($event->is_locked)
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <span class="text-lg mr-2">🔒</span>
+                        <div>
+                            <p class="text-sm font-medium text-red-800 dark:text-red-300">Pertandingan Dikunci</p>
+                            <p class="text-sm text-red-600 dark:text-red-400">Pendaftaran dan medali tidak dapat diubah.
+                                Admin dapat membuka kunci jika perlu koreksi.</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informasi Pertandingan</h2>
                 <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Nama Pertandingan</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-medium">{{ $event->name }}</dd></div>
-                    <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">ID</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $event->id }}</dd></div>
-                    <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Durasi</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $event->start_date->format('d M Y') }} - {{ $event->end_date->format('d M Y') }}</dd></div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Nama Pertandingan</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-medium">{{ $event->name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">ID</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $event->id }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Durasi</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                            {{ $event->start_date->format('d M Y') }} - {{ $event->end_date->format('d M Y') }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
+                        <dd class="mt-1">
+                            @if($event->is_locked)
+                                <span
+                                    class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-900/30 dark:text-red-400">🔒
+                                    Dikunci</span>
+                            @else
+                                <span
+                                    class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400">🔓
+                                    Aktif</span>
+                            @endif
+                        </dd>
+                    </div>
                     <div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Peraturan Klasemen</dt>
                         <dd class="mt-1">
                             @if($event->count_festival_medals)
-                                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400">Termasuk Festival</span>
+                                <span
+                                    class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-900/30 dark:text-green-400">Termasuk
+                                    Festival</span>
                             @else
-                                <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400">Standar (Hanya Prestasi)</span>
+                                <span
+                                    class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400">Standar
+                                    (Hanya Prestasi)</span>
                             @endif
                         </dd>
                     </div>
-                    <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">🥇 Poin Emas</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">{{ $event->gold_point ?? 3 }}</dd></div>
-                    <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">🥈 Poin Perak</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">{{ $event->silver_point ?? 2 }}</dd></div>
-                    <div><dt class="text-sm font-medium text-gray-500 dark:text-gray-400">🥉 Poin Perunggu</dt><dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">{{ $event->bronze_point ?? 1 }}</dd></div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">🥇 Poin Emas</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">
+                            {{ $event->gold_point ?? 3 }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">🥈 Poin Perak</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">
+                            {{ $event->silver_point ?? 2 }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">🥉 Poin Perunggu</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">
+                            {{ $event->bronze_point ?? 1 }}</dd>
+                    </div>
                 </dl>
             </div>
         </div>

@@ -45,6 +45,36 @@
                             </div>
                         </div>
                     @endif
+                    @if(session('error'))
+                        <div class="fixed top-20 right-4 z-50 w-full max-w-sm overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-300 ease-in-out"
+                            x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                            <div class="p-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">Gagal!</p>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ session('error') }}</p>
+                                    </div>
+                                    <div class="ml-4 flex flex-shrink-0">
+                                        <button type="button" @click="show = false"
+                                            class="inline-flex rounded-md bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                            <span class="sr-only">Close</span>
+                                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path
+                                                    d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                         <form action="{{ route('registrations.index') }}" method="GET"
                             class="relative flex-1 sm:min-w-[300px]">
@@ -114,6 +144,10 @@
                             <div class="flex items-center justify-between mb-2">
                                 <span
                                     class="text-sm font-bold uppercase tracking-wider {{ $eventId == $event->id ? 'text-blue-700 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400' }} truncate">{{ $event->name }}</span>
+                                @if($event->is_locked)
+                                    <span
+                                        class="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-900/30 dark:text-red-400">🔒</span>
+                                @endif
                                 @if($eventId == $event->id)
                                     <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="currentColor"
                                         viewBox="0 0 20 20">
@@ -136,6 +170,20 @@
                 </div>
 
                 @if($eventId && ($activeEvent = $events->find($eventId)))
+                    @if($activeEvent->is_locked)
+                        <div
+                            class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 shadow-sm">
+                            <div class="flex items-center">
+                                <span class="text-lg mr-2">🔒</span>
+                                <div>
+                                    <p class="text-sm font-medium text-red-800 dark:text-red-300">Pertandingan
+                                        "{{ $activeEvent->name }}" Dikunci</p>
+                                    <p class="text-sm text-red-600 dark:text-red-400">Data pendaftaran dan medali tidak dapat
+                                        diubah. Hubungi admin jika perlu koreksi.</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     <div
                         class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 flex flex-col lg:flex-row justify-between items-center gap-6 shadow-sm">
                         <div class="space-y-1 text-center lg:text-left">
@@ -452,7 +500,8 @@
                                         @endrole
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                            {{ $loop->iteration }}</td>
+                                            {{ $loop->iteration }}
+                                        </td>
                                         <td class="px-6 py-4 text-sm text-gray-900 dark:text-white min-w-[200px]">
                                             <a href="{{ route('tournament-categories.show', $registration->category) }}"
                                                 class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold leading-tight block transition">
@@ -467,7 +516,8 @@
                                         </td>
                                         <td
                                             class="px-6 py-4 text-sm text-gray-900 dark:text-white font-medium min-w-[150px]">
-                                            {{ $registration->participant->name }}</td>
+                                            {{ $registration->participant->name }}
+                                        </td>
                                         <td class="px-6 py-4 text-sm text-gray-900 dark:text-white min-w-[180px]">
                                             <a href="{{ route('contingents.show', $registration->contingent) }}"
                                                 class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 leading-tight block transition">
@@ -493,20 +543,25 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                             <a href="{{ route('registrations.show', $registration) }}"
                                                 class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition">Lihat</a>
-                                            <a href="{{ route('registrations.edit', ['registration' => $registration] + request()->query()) }}"
-                                                class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition">Edit</a>
-                                            @role('admin')
-                                            <form action="{{ route('registrations.destroy', $registration) }}" method="POST"
-                                                class="inline" onsubmit="return confirm('Apakah Anda yakin?');">
-                                                @csrf @method('DELETE')
-                                                @foreach(request()->only(['event_id', 'search', 'page', 'sort', 'direction', 'per_page']) as $key => $value)
-                                                    @if($value) <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                                                    @endif
-                                                @endforeach
-                                                <button type="submit"
-                                                    class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition">Hapus</button>
-                                            </form>
-                                            @endrole
+                                            @if(!$registration->category->event->is_locked)
+                                                <a href="{{ route('registrations.edit', ['registration' => $registration] + request()->query()) }}"
+                                                    class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 transition">Edit</a>
+                                                @role('admin')
+                                                <form action="{{ route('registrations.destroy', $registration) }}" method="POST"
+                                                    class="inline" onsubmit="return confirm('Apakah Anda yakin?');">
+                                                    @csrf @method('DELETE')
+                                                    @foreach(request()->only(['event_id', 'search', 'page', 'sort', 'direction', 'per_page']) as $key => $value)
+                                                        @if($value) <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                                        @endif
+                                                    @endforeach
+                                                    <button type="submit"
+                                                        class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition">Hapus</button>
+                                                </form>
+                                                @endrole
+                                            @else
+                                                <span class="text-xs text-gray-400 dark:text-gray-500"
+                                                    title="Pertandingan dikunci">🔒 Dikunci</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
