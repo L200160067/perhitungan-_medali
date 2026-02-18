@@ -37,6 +37,7 @@ class UpdateParticipantRequest extends FormRequest
             'photo.image' => 'Foto harus berupa file gambar (JPG, PNG, atau WebP).',
             'photo.mimes' => 'Format foto harus JPG, PNG, atau WebP.',
             'photo.max' => 'Ukuran foto maksimal 5MB.',
+            'photo.uploaded' => 'Foto gagal diupload. Pastikan ukuran file tidak melebihi 5MB.',
         ];
     }
 }
