@@ -8,15 +8,20 @@ use App\Models\Participant;
 use App\Models\Registration;
 use App\Models\TournamentCategory;
 use App\Enums\ParticipantGender;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\OnEachRow;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\BeforeImport;
+use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Events\ImportFailed;
 use Maatwebsite\Excel\Row;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 
-class RegistrationImport implements OnEachRow, WithHeadingRow, WithChunkReading, WithValidation, SkipsEmptyRows
+class RegistrationImport implements OnEachRow, WithHeadingRow, WithChunkReading, WithValidation, SkipsEmptyRows, WithEvents
 {
     public function onRow(Row $row)
     {
@@ -32,6 +37,11 @@ class RegistrationImport implements OnEachRow, WithHeadingRow, WithChunkReading,
             ->first();
 
         if (!$event || !$category) {
+            return;
+        }
+
+        // Skip importation for locked events
+        if ($event->is_locked) {
             return;
         }
 
@@ -93,5 +103,23 @@ class RegistrationImport implements OnEachRow, WithHeadingRow, WithChunkReading,
     public function chunkSize(): int
     {
         return 1000;
+    }
+
+    /**
+     * Wrap entire import in a transaction for atomicity.
+     */
+    public function registerEvents(): array
+    {
+        return [
+            BeforeImport::class => function () {
+                DB::beginTransaction();
+            },
+            AfterImport::class => function () {
+                DB::commit();
+            },
+            ImportFailed::class => function () {
+                DB::rollBack();
+            },
+        ];
     }
 }

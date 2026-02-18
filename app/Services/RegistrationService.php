@@ -13,8 +13,16 @@ class RegistrationService
 {
     public function create(array $data): Registration
     {
-        $this->validateBusinessRules($data);
-        return Registration::create($data);
+        return DB::transaction(function () use ($data) {
+            // Lock the Category to prevent race conditions during medal limit check
+            $categoryId = $data['category_id'] ?? null;
+            if ($categoryId) {
+                TournamentCategory::where('id', $categoryId)->lockForUpdate()->first();
+            }
+
+            $this->validateBusinessRules($data);
+            return Registration::create($data);
+        });
     }
 
     public function update(Registration $registration, array $data): Registration

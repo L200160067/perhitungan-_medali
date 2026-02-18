@@ -166,7 +166,12 @@ class EventController extends Controller
     {
         $this->authorize('update', $event);
 
-        $event->update(['is_locked' => !$event->is_locked]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($event) {
+            $event = Event::where('id', $event->id)->lockForUpdate()->first();
+            $event->update(['is_locked' => !$event->is_locked]);
+        });
+
+        $event->refresh();
 
         if (request()->expectsJson()) {
             return response()->json($event);

@@ -248,6 +248,17 @@ class RegistrationController extends Controller
             return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
         }
 
+        // Check if any registration belongs to a locked event
+        $lockedCount = Registration::whereIn('registrations.id', $ids)
+            ->join('tournament_categories', 'registrations.category_id', '=', 'tournament_categories.id')
+            ->join('events', 'tournament_categories.event_id', '=', 'events.id')
+            ->where('events.is_locked', true)
+            ->count();
+
+        if ($lockedCount > 0) {
+            return redirect()->back()->with('error', 'Beberapa pendaftaran berasal dari pertandingan yang sudah dikunci. Tidak dapat menghapus.');
+        }
+
         Registration::whereIn('id', $ids)->delete();
 
         $queryParams = request()->except(['_token', '_method', 'ids']);
