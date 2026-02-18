@@ -91,6 +91,8 @@ class TournamentCategoryController extends Controller
 
     public function show(TournamentCategory $tournamentCategory)
     {
+        $tournamentCategory->load('event');
+
         if (request()->expectsJson()) {
             return response()->json($tournamentCategory);
         }
@@ -152,9 +154,20 @@ class TournamentCategoryController extends Controller
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
 
-        Excel::import(new TournamentCategoryImport, $request->file('file'));
+        try {
+            Excel::import(new TournamentCategoryImport, $request->file('file'));
 
-        return redirect()->route('tournament-categories.index')->with('success', 'Data Kategori berhasil diimpor!');
+            return redirect()->route('tournament-categories.index')->with('success', 'Data Kategori berhasil diimpor!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $messages = [];
+            foreach ($failures as $failure) {
+                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->withErrors($messages);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
 
     public function bulkDestroy(Request $request)

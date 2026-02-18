@@ -27,18 +27,21 @@ class MedalController extends Controller
 
     public function create()
     {
-        return view('medals.create');
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('medals.create', compact('queryParams'));
     }
 
     public function store(StoreMedalRequest $request)
     {
-        $medal = Medal::query()->create($request->validated());
+        $medal = Medal::create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($medal, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('medals.index')->with('success', 'Medali berhasil ditambahkan!');
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('medals.index', $queryParams)->with('success', 'Medali berhasil ditambahkan!');
     }
 
     public function show(Medal $medal)
@@ -52,7 +55,9 @@ class MedalController extends Controller
 
     public function edit(Medal $medal)
     {
-        return view('medals.edit', compact('medal'));
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('medals.edit', compact('medal', 'queryParams'));
     }
 
     public function update(UpdateMedalRequest $request, Medal $medal)
@@ -63,7 +68,8 @@ class MedalController extends Controller
             return response()->json($medal);
         }
 
-        return redirect()->route('medals.index')->with('success', 'Medali berhasil diperbarui!');
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('medals.index', $queryParams)->with('success', 'Medali berhasil diperbarui!');
     }
 
     public function destroy(Medal $medal)

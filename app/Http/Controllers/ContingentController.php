@@ -152,9 +152,20 @@ class ContingentController extends Controller
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
 
-        Excel::import(new ContingentImport, $request->file('file'));
+        try {
+            Excel::import(new ContingentImport, $request->file('file'));
 
-        return redirect()->route('contingents.index')->with('success', 'Data Kontingen berhasil diimpor!');
+            return redirect()->route('contingents.index')->with('success', 'Data Kontingen berhasil diimpor!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $messages = [];
+            foreach ($failures as $failure) {
+                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->withErrors($messages);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
 
     public function bulkDestroy(Request $request)

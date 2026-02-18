@@ -81,7 +81,7 @@ class ParticipantController extends Controller
             $data['photo'] = $path;
         }
 
-        $participant = Participant::query()->create($data);
+        $participant = Participant::create($data);
 
         if (request()->expectsJson()) {
             return response()->json($participant, Response::HTTP_CREATED);
@@ -169,9 +169,20 @@ class ParticipantController extends Controller
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
 
-        Excel::import(new ParticipantImport, $request->file('file'));
+        try {
+            Excel::import(new ParticipantImport, $request->file('file'));
 
-        return redirect()->route('participants.index')->with('success', 'Data Peserta berhasil diimpor!');
+            return redirect()->route('participants.index')->with('success', 'Data Peserta berhasil diimpor!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $messages = [];
+            foreach ($failures as $failure) {
+                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->withErrors($messages);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
 
     public function bulkDestroy(Request $request)

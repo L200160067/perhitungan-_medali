@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\RegistrationStatus;
 use App\Http\Requests\StoreRegistrationRequest;
 use App\Http\Requests\UpdateRegistrationRequest;
+use App\Imports\RegistrationImport;
 use App\Models\Contingent;
 use App\Models\Medal;
 use App\Models\Participant;
@@ -12,6 +13,7 @@ use App\Models\Registration;
 use App\Models\TournamentCategory;
 use App\Services\RegistrationService;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\Response;
 
 class RegistrationController extends Controller
@@ -171,6 +173,7 @@ class RegistrationController extends Controller
         $queryParams = request()->except(['_token', '_method']);
         return redirect()->route('registrations.index', $queryParams)->with('success', 'Pendaftaran berhasil dihapus!');
     }
+
     public function import()
     {
         // Check policy if needed, though authorizeResource handles standard CRUD
@@ -183,14 +186,22 @@ class RegistrationController extends Controller
         $this->authorize('create', Registration::class);
 
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls|max:10240',
+            'file' => 'required|mimes:xlsx,xls,csv',
         ]);
 
         try {
-            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\RegistrationImport, $request->file('file'));
+            Excel::import(new RegistrationImport, $request->file('file'));
+
             return redirect()->route('registrations.index')->with('success', 'Data pendaftaran berhasil diimport!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $messages = [];
+            foreach ($failures as $failure) {
+                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->withErrors($messages);
         } catch (\Exception $e) {
-            return back()->withErrors(['file' => 'Terjadi kesalahan saat import: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['file' => 'Terjadi kesalahan saat import: ' . $e->getMessage()]);
         }
     }
 

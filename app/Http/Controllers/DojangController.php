@@ -46,18 +46,21 @@ class DojangController extends Controller
 
     public function create()
     {
-        return view('dojangs.create');
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('dojangs.create', compact('queryParams'));
     }
 
     public function store(StoreDojangRequest $request)
     {
-        $dojang = Dojang::query()->create($request->validated());
+        $dojang = Dojang::create($request->validated());
 
         if (request()->expectsJson()) {
             return response()->json($dojang, Response::HTTP_CREATED);
         }
 
-        return redirect()->route('dojangs.index')->with('success', 'Dojang berhasil ditambahkan!');
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('dojangs.index', $queryParams)->with('success', 'Dojang berhasil ditambahkan!');
     }
 
     public function show(Dojang $dojang)
@@ -73,7 +76,9 @@ class DojangController extends Controller
 
     public function edit(Dojang $dojang)
     {
-        return view('dojangs.edit', compact('dojang'));
+        $queryParams = request()->only(['search', 'page', 'sort', 'direction', 'per_page']);
+
+        return view('dojangs.edit', compact('dojang', 'queryParams'));
     }
 
     public function update(UpdateDojangRequest $request, Dojang $dojang)
@@ -84,7 +89,8 @@ class DojangController extends Controller
             return response()->json($dojang);
         }
 
-        return redirect()->route('dojangs.index')->with('success', 'Dojang berhasil diperbarui!');
+        $queryParams = $request->input('query_params', []);
+        return redirect()->route('dojangs.index', $queryParams)->with('success', 'Dojang berhasil diperbarui!');
     }
 
     public function destroy(Dojang $dojang)
@@ -112,9 +118,20 @@ class DojangController extends Controller
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
 
-        Excel::import(new DojangImport, $request->file('file'));
+        try {
+            Excel::import(new DojangImport, $request->file('file'));
 
-        return redirect()->route('dojangs.index')->with('success', 'Data Dojang berhasil diimpor!');
+            return redirect()->route('dojangs.index')->with('success', 'Data Dojang berhasil diimpor!');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $messages = [];
+            foreach ($failures as $failure) {
+                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->withErrors($messages);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
     }
 
     public function bulkDestroy(Request $request)
