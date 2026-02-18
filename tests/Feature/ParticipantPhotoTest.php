@@ -67,12 +67,12 @@ class ParticipantPhotoTest extends TestCase
         $response->assertSessionHasErrors('photo');
     }
 
-    public function test_participant_photo_validation_ratio()
+    public function test_participant_photo_auto_crops_any_ratio()
     {
         Storage::fake('public');
         $dojang = Dojang::factory()->create();
 
-        // 100x100 is 1:1, should fail 3:4 (0.75)
+        // 100x100 is 1:1, should now be accepted and auto-cropped to 3:4
         $file = UploadedFile::fake()->image('avatar.jpg', 100, 100);
 
         $response = $this->actingAs($this->admin)->post(route('participants.store'), [
@@ -83,7 +83,10 @@ class ParticipantPhotoTest extends TestCase
             'photo' => $file,
         ]);
 
-        $response->assertSessionHasErrors('photo');
+        $response->assertRedirect(route('participants.index'));
+        $participant = Participant::first();
+        $this->assertNotNull($participant->photo);
+        Storage::disk('public')->assertExists($participant->photo);
     }
 
     public function test_participant_photo_can_be_updated()

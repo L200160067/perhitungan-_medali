@@ -11,8 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 use App\Imports\ParticipantImport;
 use Maatwebsite\Excel\Facades\Excel;
-
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
 
 class ParticipantController extends Controller
 {
@@ -77,8 +78,7 @@ class ParticipantController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('participants-photos', 'public');
-            $data['photo'] = $path;
+            $data['photo'] = $this->processPhoto($request->file('photo'));
         }
 
         $participant = Participant::create($data);
@@ -123,8 +123,7 @@ class ParticipantController extends Controller
             if ($participant->photo) {
                 Storage::disk('public')->delete($participant->photo);
             }
-            $path = $request->file('photo')->store('participants-photos', 'public');
-            $data['photo'] = $path;
+            $data['photo'] = $this->processPhoto($request->file('photo'));
         }
 
         $participant->update($data);
@@ -207,5 +206,21 @@ class ParticipantController extends Controller
 
         $queryParams = request()->except(['_token', '_method', 'ids']);
         return redirect()->route('participants.index', $queryParams)->with('success', count($ids) . ' Peserta berhasil dihapus!');
+    }
+
+    /**
+     * Process uploaded photo: center-crop to 3:4 ratio, resize to 450x600, compress as JPEG.
+     */
+    private function processPhoto(UploadedFile $file): string
+    {
+        $image = Image::read($file);
+        $image->cover(450, 600);
+
+        $filename = uniqid('participant_') . '.jpg';
+        $path = 'participants-photos/' . $filename;
+
+        Storage::disk('public')->put($path, $image->toJpeg(80));
+
+        return $path;
     }
 }
