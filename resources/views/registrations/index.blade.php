@@ -636,7 +636,10 @@
                                         </td>
                                         <td
                                             class="px-6 py-4 text-sm text-gray-900 dark:text-white font-medium min-w-[150px]">
-                                            {{ $registration->participant->name }}
+                                            <a href="{{ route('participants.show', $registration->participant) }}"
+                                                class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 leading-tight block transition">
+                                                {{ $registration->participant->name }}
+                                            </a>
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-900 dark:text-white min-w-[180px]">
                                             <a href="{{ route('contingents.show', $registration->contingent) }}"

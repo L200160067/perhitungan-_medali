@@ -40,8 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('dojangs/bulk-destroy', [DojangController::class, 'bulkDestroy'])->name('dojangs.bulkDestroy');
     Route::resource('dojangs', DojangController::class);
 
-    Route::get('participant/import', [ParticipantController::class, 'import'])->name('participants.import');
-    Route::post('participant/import', [ParticipantController::class, 'storeImport'])->name('participants.storeImport');
+    Route::get('participants/import', [ParticipantController::class, 'import'])->name('participants.import');
+    Route::post('participants/import', [ParticipantController::class, 'storeImport'])->name('participants.storeImport');
     Route::delete('participants/bulk-destroy', [ParticipantController::class, 'bulkDestroy'])->name('participants.bulkDestroy');
     Route::resource('participants', ParticipantController::class);
     

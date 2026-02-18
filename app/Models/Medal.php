@@ -35,10 +35,10 @@ class Medal extends Model
     public function color(): string
     {
         return match (strtolower($this->name)) {
-            'gold' => 'bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-500 dark:text-yellow-950 dark:border-yellow-500',
-            'silver' => 'bg-gray-100 text-gray-800 border border-gray-200 dark:bg-gray-300 dark:text-gray-900 dark:border-gray-300',
-            'bronze' => 'bg-orange-100 text-orange-800 border border-orange-200 dark:bg-orange-500 dark:text-orange-950 dark:border-orange-500',
-            default => 'bg-slate-100 text-slate-800 border border-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600',
+            'gold' => 'bg-yellow-100 text-yellow-800 ring-1 ring-inset ring-yellow-300 dark:bg-yellow-400/20 dark:text-yellow-300 dark:ring-yellow-400/40',
+            'silver' => 'bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-300 dark:bg-gray-400/20 dark:text-gray-300 dark:ring-gray-400/40',
+            'bronze' => 'bg-orange-100 text-orange-800 ring-1 ring-inset ring-orange-300 dark:bg-orange-400/20 dark:text-orange-300 dark:ring-orange-400/40',
+            default => 'bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-300 dark:bg-slate-400/20 dark:text-slate-300 dark:ring-slate-400/40',
         };
     }
 
