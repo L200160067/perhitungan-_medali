@@ -30,4 +30,13 @@ class UpdateParticipantRequest extends FormRequest
             'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'photo.image' => 'Foto harus berupa file gambar (JPG, PNG, atau WebP).',
+            'photo.mimes' => 'Format foto harus JPG, PNG, atau WebP.',
+            'photo.max' => 'Ukuran foto maksimal 5MB.',
+        ];
+    }
 }

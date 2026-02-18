@@ -78,7 +78,11 @@ class ParticipantController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('photo')) {
-            $data['photo'] = $this->processPhoto($request->file('photo'));
+            try {
+                $data['photo'] = $this->processPhoto($request->file('photo'));
+            } catch (\Exception $e) {
+                return redirect()->back()->withInput()->withErrors(['photo' => 'Gagal memproses foto. Pastikan file adalah gambar yang valid dan tidak rusak.']);
+            }
         }
 
         $participant = Participant::create($data);
@@ -123,7 +127,11 @@ class ParticipantController extends Controller
             if ($participant->photo) {
                 Storage::disk('public')->delete($participant->photo);
             }
-            $data['photo'] = $this->processPhoto($request->file('photo'));
+            try {
+                $data['photo'] = $this->processPhoto($request->file('photo'));
+            } catch (\Exception $e) {
+                return redirect()->back()->withInput()->withErrors(['photo' => 'Gagal memproses foto. Pastikan file adalah gambar yang valid dan tidak rusak.']);
+            }
         }
 
         $participant->update($data);
