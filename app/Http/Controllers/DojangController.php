@@ -60,6 +60,7 @@ class DojangController extends Controller
         }
 
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('dojangs.index', $queryParams)->with('success', 'Dojang berhasil ditambahkan!');
     }
 
@@ -90,6 +91,7 @@ class DojangController extends Controller
         }
 
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('dojangs.index', $queryParams)->with('success', 'Dojang berhasil diperbarui!');
     }
 
@@ -107,6 +109,7 @@ class DojangController extends Controller
     public function import()
     {
         $this->authorize('create', Dojang::class);
+
         return view('dojangs.import');
     }
 
@@ -126,17 +129,18 @@ class DojangController extends Controller
             $failures = $e->failures();
             $messages = [];
             foreach ($failures as $failure) {
-                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $messages[] = 'Baris '.$failure->row().': '.implode(', ', $failure->errors());
             }
+
             return redirect()->back()->withErrors($messages);
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: '.$e->getMessage()]);
         }
     }
 
     public function bulkDestroy(Request $request)
     {
-        if (!auth()->user()->hasRole('admin')) {
+        if (! auth()->user()->hasRole('admin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -149,6 +153,7 @@ class DojangController extends Controller
         Dojang::whereIn('id', $ids)->delete();
 
         $queryParams = request()->except(['_token', '_method', 'ids']);
-        return redirect()->route('dojangs.index', $queryParams)->with('success', count($ids) . ' Dojang berhasil dihapus!');
+
+        return redirect()->route('dojangs.index', $queryParams)->with('success', count($ids).' Dojang berhasil dihapus!');
     }
 }

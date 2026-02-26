@@ -18,7 +18,7 @@ class DashboardController extends Controller
 
         // Determine active event ID (from request or the most recent one)
         $activeEventId = $request->input('event_id');
-        if (!$activeEventId && $events->isNotEmpty()) {
+        if (! $activeEventId && $events->isNotEmpty()) {
             $activeEventId = $events->first()->id;
         }
 

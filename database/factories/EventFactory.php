@@ -15,7 +15,7 @@ class EventFactory extends Factory
     public function definition(): array
     {
         $startDate = $this->faker->dateTimeBetween('-1 month', '+1 month');
-        $endDate = (clone $startDate)->modify('+' . $this->faker->numberBetween(1, 3) . ' days');
+        $endDate = (clone $startDate)->modify('+'.$this->faker->numberBetween(1, 3).' days');
 
         return [
             'start_date' => $startDate,

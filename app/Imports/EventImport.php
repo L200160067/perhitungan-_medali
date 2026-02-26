@@ -4,24 +4,19 @@ namespace App\Imports;
 
 use App\Models\Event;
 use Maatwebsite\Excel\Concerns\OnEachRow;
-use Maatwebsite\Excel\Row;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Row;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class EventImport implements OnEachRow, WithValidation, WithHeadingRow, WithChunkReading, SkipsEmptyRows
+class EventImport implements OnEachRow, SkipsEmptyRows, WithChunkReading, WithHeadingRow, WithValidation
 {
-    /**
-    * @param Row $row
-    */
     public function onRow(Row $row)
     {
         $rowIndex = $row->getIndex();
-        $row      = $row->toArray();
-
-
+        $row = $row->toArray();
 
         if (empty($row['nama_pertandingan'])) {
             return;
@@ -39,19 +34,22 @@ class EventImport implements OnEachRow, WithValidation, WithHeadingRow, WithChun
                 'end_date' => $endDate,
                 'location' => $row['lokasi'] ?? null,
                 'description' => $row['deskripsi'] ?? null,
-                'is_active' => true, 
+                'is_active' => true,
             ]
         );
     }
 
     private function transformDate($value)
     {
-        if (!$value) return now();
-        
+        if (! $value) {
+            return now();
+        }
+
         try {
             if (is_numeric($value)) {
                 return Date::excelToDateTimeObject($value);
             }
+
             return \Carbon\Carbon::parse($value);
         } catch (\Exception $e) {
             return now();

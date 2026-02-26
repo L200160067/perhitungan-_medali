@@ -17,7 +17,7 @@ class DemoEventSeeder extends Seeder
             'Piala Gubernur Jateng Open',
             'Taekwondo Championship Jakarta Series',
             'Piala Walikota Solo',
-            'Kejuaraan Pelajar Se-Indonesia'
+            'Kejuaraan Pelajar Se-Indonesia',
         ];
 
         foreach ($eventNames as $index => $name) {

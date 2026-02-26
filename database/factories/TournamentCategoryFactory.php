@@ -33,7 +33,7 @@ class TournamentCategoryFactory extends Factory
             'age_reference_date' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'min_age' => $minAge,
             'max_age' => $maxAge,
-            'weight_class_name' => 'Under ' . number_format($maxWeight, 2) . ' kg',
+            'weight_class_name' => 'Under '.number_format($maxWeight, 2).' kg',
             'min_weight' => $minWeight,
             'max_weight' => $maxWeight,
             'poomsae_type' => null,
@@ -61,7 +61,7 @@ class TournamentCategoryFactory extends Factory
         return $this->state([
             'type' => TournamentType::Kyourugi,
             'poomsae_type' => null,
-            'weight_class_name' => 'Under ' . number_format($maxWeight, 2) . ' kg',
+            'weight_class_name' => 'Under '.number_format($maxWeight, 2).' kg',
             'min_weight' => $minWeight,
             'max_weight' => $maxWeight,
         ]);

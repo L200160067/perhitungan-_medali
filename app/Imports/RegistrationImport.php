@@ -2,31 +2,30 @@
 
 namespace App\Imports;
 
+use App\Enums\ParticipantGender;
 use App\Models\Contingent;
 use App\Models\Event;
 use App\Models\Participant;
 use App\Models\Registration;
 use App\Models\TournamentCategory;
-use App\Enums\ParticipantGender;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Concerns\OnEachRow;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\OnEachRow;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Events\ImportFailed;
 use Maatwebsite\Excel\Row;
-use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 
-class RegistrationImport implements OnEachRow, WithHeadingRow, WithChunkReading, WithValidation, SkipsEmptyRows, WithEvents
+class RegistrationImport implements OnEachRow, SkipsEmptyRows, WithChunkReading, WithEvents, WithHeadingRow, WithValidation
 {
     public function onRow(Row $row)
     {
         $rowIndex = $row->getIndex();
-        $row      = $row->toArray();
+        $row = $row->toArray();
 
         // 1. Find Event
         $event = Event::where('name', $row['nama_pertandingan'])->first();
@@ -36,7 +35,7 @@ class RegistrationImport implements OnEachRow, WithHeadingRow, WithChunkReading,
             ->where('event_id', $event?->id)
             ->first();
 
-        if (!$event || !$category) {
+        if (! $event || ! $category) {
             return;
         }
 
@@ -67,7 +66,7 @@ class RegistrationImport implements OnEachRow, WithHeadingRow, WithChunkReading,
                 'dojang_id' => $dojang->id,
             ],
             [
-                'gender' => $gender, 
+                'gender' => $gender,
                 'birth_date' => now()->subYears(10), // Default to 10 years old if missing
             ]
         );
@@ -84,7 +83,10 @@ class RegistrationImport implements OnEachRow, WithHeadingRow, WithChunkReading,
     private function mapGender($value)
     {
         $value = strtolower($value);
-        if ($value === 'p' || $value === 'f' || $value === 'female' || $value === 'perempuan') return ParticipantGender::Female;
+        if ($value === 'p' || $value === 'f' || $value === 'female' || $value === 'perempuan') {
+            return ParticipantGender::Female;
+        }
+
         return ParticipantGender::Male;
     }
 

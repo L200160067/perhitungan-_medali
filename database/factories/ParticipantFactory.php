@@ -17,7 +17,7 @@ class ParticipantFactory extends Factory
     public function definition(): array
     {
         $age = $this->faker->numberBetween(10, 25);
-        $birthDate = $this->faker->dateTimeBetween('-' . ($age + 1) . ' years', '-' . $age . ' years');
+        $birthDate = $this->faker->dateTimeBetween('-'.($age + 1).' years', '-'.$age.' years');
 
         return [
             'dojang_id' => Dojang::factory(),
@@ -38,7 +38,7 @@ class ParticipantFactory extends Factory
     {
         return $this->state(function () use ($minAge, $maxAge) {
             $age = $this->faker->numberBetween($minAge, $maxAge);
-            $birthDate = $this->faker->dateTimeBetween('-' . ($age + 1) . ' years', '-' . $age . ' years');
+            $birthDate = $this->faker->dateTimeBetween('-'.($age + 1).' years', '-'.$age.' years');
 
             return [
                 'birth_date' => $birthDate,

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Enums\CategoryType;
 use App\Enums\RegistrationStatus;
 use App\Models\Contingent;
 use App\Models\Medal;
@@ -16,7 +15,9 @@ class FestivalPrestasiTest extends TestCase
     use RefreshDatabase;
 
     private $gold;
+
     private $silver;
+
     private $bronze;
 
     protected function setUp(): void
@@ -86,7 +87,7 @@ class FestivalPrestasiTest extends TestCase
 
         $event = \App\Models\Event::factory()->create();
         $contingent = Contingent::factory()->create(['name' => 'Test Contingent', 'event_id' => $event->id]);
-        
+
         $prestasiCategory = TournamentCategory::factory()->prestasi()->create(['event_id' => $event->id]);
         $festivalCategory = TournamentCategory::factory()->festival()->create(['event_id' => $event->id]);
 
@@ -107,13 +108,15 @@ class FestivalPrestasiTest extends TestCase
         }
 
         $response = $this->actingAs($user)->get(route('dashboard'));
-        
+
         // Should only see 1 gold in standings
         $response->assertViewHas('medalStandings', function ($stats) {
             // Check if there is an entry for 'Test Contingent'
             $contingentStats = $stats->firstWhere('name', 'Test Contingent');
-            
-            if (!$contingentStats) return false;
+
+            if (! $contingentStats) {
+                return false;
+            }
 
             return $contingentStats->gold_count == 1 && $contingentStats->total_medals == 1;
         });

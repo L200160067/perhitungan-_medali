@@ -3,11 +3,9 @@
 namespace Database\Seeders;
 
 use App\Enums\RegistrationStatus;
-use App\Models\Contingent;
 use App\Models\Medal;
 use App\Models\Participant;
 use App\Models\Registration;
-use App\Models\TournamentCategory;
 use Illuminate\Database\Seeder;
 
 class RegistrationSeeder extends Seeder
@@ -33,7 +31,7 @@ class RegistrationSeeder extends Seeder
                 // Create 5 registrations per category for speed
                 $regCount = 5;
                 $availableParticipants = $participants->shuffle();
-                
+
                 for ($i = 0; $i < $regCount; $i++) {
                     $participant = $availableParticipants->pop();
                     $contingent = $contingents->random();

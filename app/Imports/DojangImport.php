@@ -4,33 +4,29 @@ namespace App\Imports;
 
 use App\Models\Dojang;
 use Maatwebsite\Excel\Concerns\OnEachRow;
-use Maatwebsite\Excel\Row;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Row;
 
-class DojangImport implements OnEachRow, WithValidation, WithHeadingRow, WithChunkReading, SkipsEmptyRows, WithMapping
+class DojangImport implements OnEachRow, SkipsEmptyRows, WithChunkReading, WithHeadingRow, WithMapping, WithValidation
 {
     /**
-    * @param mixed $row
-    *
-    * @return array
-    */
+     * @param  mixed  $row
+     */
     public function map($row): array
     {
         return array_map(function ($value) {
             return is_string($value) ? trim($value) : $value;
         }, $row);
     }
-    /**
-    * @param Row $row
-    */
+
     public function onRow(Row $row)
     {
         $rowIndex = $row->getIndex();
-        $row      = $row->toArray();
+        $row = $row->toArray();
 
         // Don't create if name is missing
         if (empty($row['nama'])) {

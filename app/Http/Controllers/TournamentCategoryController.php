@@ -8,12 +8,12 @@ use App\Enums\TournamentGender;
 use App\Enums\TournamentType;
 use App\Http\Requests\StoreTournamentCategoryRequest;
 use App\Http\Requests\UpdateTournamentCategoryRequest;
+use App\Imports\TournamentCategoryImport;
 use App\Models\Event;
 use App\Models\TournamentCategory;
-use Symfony\Component\HttpFoundation\Response;
-use App\Imports\TournamentCategoryImport;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\Response;
 
 class TournamentCategoryController extends Controller
 {
@@ -86,6 +86,7 @@ class TournamentCategoryController extends Controller
 
         // Redirect back with params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('tournament-categories.index', $queryParams)->with('success', 'Kategori berhasil ditambahkan!');
     }
 
@@ -124,6 +125,7 @@ class TournamentCategoryController extends Controller
 
         // Redirect back with params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('tournament-categories.index', $queryParams)->with('success', 'Kategori berhasil diperbarui!');
     }
 
@@ -137,12 +139,14 @@ class TournamentCategoryController extends Controller
 
         // Redirect back with params
         $queryParams = request()->except(['_token', '_method']);
+
         return redirect()->route('tournament-categories.index', $queryParams)->with('success', 'Kategori berhasil dihapus!');
     }
 
     public function import()
     {
         $this->authorize('create', TournamentCategory::class);
+
         return view('tournament-categories.import');
     }
 
@@ -162,17 +166,18 @@ class TournamentCategoryController extends Controller
             $failures = $e->failures();
             $messages = [];
             foreach ($failures as $failure) {
-                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $messages[] = 'Baris '.$failure->row().': '.implode(', ', $failure->errors());
             }
+
             return redirect()->back()->withErrors($messages);
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: '.$e->getMessage()]);
         }
     }
 
     public function bulkDestroy(Request $request)
     {
-        if (!auth()->user()->hasRole('admin')) {
+        if (! auth()->user()->hasRole('admin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -185,6 +190,7 @@ class TournamentCategoryController extends Controller
         TournamentCategory::whereIn('id', $ids)->delete();
 
         $queryParams = request()->except(['_token', '_method', 'ids']);
-        return redirect()->route('tournament-categories.index', $queryParams)->with('success', count($ids) . ' Kategori berhasil dihapus!');
+
+        return redirect()->route('tournament-categories.index', $queryParams)->with('success', count($ids).' Kategori berhasil dihapus!');
     }
 }

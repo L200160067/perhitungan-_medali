@@ -6,21 +6,18 @@ use App\Models\Contingent;
 use App\Models\Dojang;
 use App\Models\Event;
 use Maatwebsite\Excel\Concerns\OnEachRow;
-use Maatwebsite\Excel\Row;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Row;
 
-class ContingentImport implements OnEachRow, WithValidation, WithHeadingRow, WithChunkReading, SkipsEmptyRows, WithMapping
+class ContingentImport implements OnEachRow, SkipsEmptyRows, WithChunkReading, WithHeadingRow, WithMapping, WithValidation
 {
     /**
-    * @param mixed $row
-    *
-    * @return array
-    */
+     * @param  mixed  $row
+     */
     public function map($row): array
     {
         return array_map(function ($value) {
@@ -28,13 +25,10 @@ class ContingentImport implements OnEachRow, WithValidation, WithHeadingRow, Wit
         }, $row);
     }
 
-    /**
-    * @param Row $row
-    */
     public function onRow(Row $row)
     {
         $rowIndex = $row->getIndex();
-        $row      = $row->toArray();
+        $row = $row->toArray();
 
         if (empty($row['nama_kontingen']) || empty($row['nama_pertandingan']) || empty($row['nama_dojang'])) {
             return;
@@ -42,12 +36,12 @@ class ContingentImport implements OnEachRow, WithValidation, WithHeadingRow, Wit
 
         // Find Event
         $event = Event::where('name', $row['nama_pertandingan'])->first();
-        if (!$event) {
-             $event = Event::where('name', 'LIKE', $row['nama_pertandingan'])->first();
+        if (! $event) {
+            $event = Event::where('name', 'LIKE', $row['nama_pertandingan'])->first();
         }
-        
-        if (!$event) {
-            return; 
+
+        if (! $event) {
+            return;
         }
 
         // Find or Create Dojang

@@ -62,6 +62,7 @@ class EventController extends Controller
 
         // Redirect back with params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('events.index', $queryParams)->with('success', 'Pertandingan berhasil ditambahkan!');
     }
 
@@ -92,6 +93,7 @@ class EventController extends Controller
 
         // Redirect back with params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('events.index', $queryParams)->with('success', 'Pertandingan berhasil diperbarui!');
     }
 
@@ -105,12 +107,14 @@ class EventController extends Controller
 
         // Redirect back with params
         $queryParams = request()->except(['_token', '_method']);
+
         return redirect()->route('events.index', $queryParams)->with('success', 'Pertandingan berhasil dihapus!');
     }
 
     public function import()
     {
         $this->authorize('create', Event::class);
+
         return view('events.import');
     }
 
@@ -124,33 +128,32 @@ class EventController extends Controller
 
         try {
 
-
             // Force Xlsx reader if file extension is xlsx, or auto detect
             // Sometimes auto detection fails with streams.
             Excel::import(new EventImport, $request->file('file'));
-            
 
             return redirect()->route('events.index')->with('success', 'Data Pertandingan berhasil diimpor!');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $messages = [];
             foreach ($failures as $failure) {
-                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $messages[] = 'Baris '.$failure->row().': '.implode(', ', $failure->errors());
             }
+
             return redirect()->back()->withErrors($messages);
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: '.$e->getMessage()]);
         }
     }
 
     public function bulkDestroy(Request $request)
     {
-        if (!auth()->user()->hasRole('admin')) {
+        if (! auth()->user()->hasRole('admin')) {
             abort(403, 'Unauthorized action.');
         }
 
         $ids = $request->input('ids', []);
-        
+
         if (empty($ids)) {
             return redirect()->back()->with('error', 'Tidak ada data yang dipilih.');
         }
@@ -159,7 +162,8 @@ class EventController extends Controller
 
         // Capture query params for redirect
         $queryParams = request()->except(['_token', '_method', 'ids']);
-        return redirect()->route('events.index', $queryParams)->with('success', count($ids) . ' Pertandingan berhasil dihapus!');
+
+        return redirect()->route('events.index', $queryParams)->with('success', count($ids).' Pertandingan berhasil dihapus!');
     }
 
     public function toggleLock(Event $event)
@@ -168,7 +172,7 @@ class EventController extends Controller
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($event) {
             $event = Event::where('id', $event->id)->lockForUpdate()->first();
-            $event->update(['is_locked' => !$event->is_locked]);
+            $event->update(['is_locked' => ! $event->is_locked]);
         });
 
         $event->refresh();
@@ -178,6 +182,7 @@ class EventController extends Controller
         }
 
         $status = $event->is_locked ? 'dikunci' : 'dibuka kuncinya';
+
         return redirect()->back()->with('success', "Pertandingan berhasil {$status}!");
     }
 }

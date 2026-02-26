@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Imports\EventImport;
 use Illuminate\Console\Command;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\EventImport;
-use Illuminate\Support\Facades\Log;
 
 class DebugEventImport extends Command
 {
     protected $signature = 'debug:event-import {file}';
+
     protected $description = 'Debug Event Import';
 
     public function handle()
@@ -19,13 +19,13 @@ class DebugEventImport extends Command
 
         try {
             Excel::import(new EventImport, $file);
-            $this->info("Import finished successfully.");
+            $this->info('Import finished successfully.');
         } catch (\Exception $e) {
-            $this->error("Import failed: " . $e->getMessage());
+            $this->error('Import failed: '.$e->getMessage());
             if ($e instanceof \Maatwebsite\Excel\Validators\ValidationException) {
-                 foreach ($e->failures() as $failure) {
-                     $this->error('Row ' . $failure->row() . ': ' . implode(', ', $failure->errors()));
-                 }
+                foreach ($e->failures() as $failure) {
+                    $this->error('Row '.$failure->row().': '.implode(', ', $failure->errors()));
+                }
             }
         }
     }

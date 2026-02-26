@@ -28,7 +28,7 @@ class ContingentSeeder extends Seeder
                 Contingent::factory()->create([
                     'event_id' => $event->id,
                     'dojang_id' => $dojang->id,
-                    'name' => $dojang->name . ' - ' . $event->name,
+                    'name' => $dojang->name.' - '.$event->name,
                 ]);
             }
         }

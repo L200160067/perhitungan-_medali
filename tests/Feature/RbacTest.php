@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Models\Contingent;
 use App\Models\Event;
-use App\Models\Registration;
 use App\Models\Medal;
 use App\Models\Participant;
-use App\Models\Contingent;
+use App\Models\Registration;
 use App\Models\TournamentCategory;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -20,7 +20,7 @@ class RbacTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Seed Roles
         $this->seed(\Database\Seeders\RoleSeeder::class);
     }
@@ -43,7 +43,7 @@ class RbacTest extends TestCase
     {
         $panitia = User::factory()->create();
         $panitia->assignRole('panitia');
-        
+
         $response = $this->actingAs($panitia)->post('/events', [
             'name' => 'New Event',
             'start_date' => '2024-01-01',
@@ -59,21 +59,21 @@ class RbacTest extends TestCase
     {
         $panitia = User::factory()->create();
         $panitia->assignRole('panitia');
-        
+
         $event = Event::factory()->create();
         $category = TournamentCategory::factory()->create(['event_id' => $event->id]);
         $contingent = Contingent::factory()->create(['event_id' => $event->id]);
         $participant = Participant::factory()->create();
-        
+
         $registration = Registration::factory()->create([
             'category_id' => $category->id,
             'contingent_id' => $contingent->id,
             'participant_id' => $participant->id,
             'medal_id' => null,
         ]);
-        
+
         $medal = Medal::factory()->create();
-        
+
         // Attempt to update with medal and forbidden field (e.g., category_id)
         // Note: validating category change requires it to belong to event, but for this test checking forbidden is key.
         $newCategory = TournamentCategory::factory()->create(['event_id' => $event->id]);
@@ -86,11 +86,11 @@ class RbacTest extends TestCase
         ]);
 
         $response->assertRedirect(); // Should succeed
-        
+
         $registration->refresh();
         $this->assertEquals($medal->id, $registration->medal_id);
-        
-        // If the system allows panitia to update everything, this assertion fails. 
+
+        // If the system allows panitia to update everything, this assertion fails.
         // NOTE: If the test expects Panitia CANNOT update category, the implementation must support that.
         // Based on previous failure, it seems it FAILED to update medal (null vs 1), likely due to validation error.
     }
@@ -99,7 +99,7 @@ class RbacTest extends TestCase
     {
         $admin = User::factory()->create();
         $admin->assignRole('admin');
-        
+
         $event = Event::factory()->create();
         $category = TournamentCategory::factory()->create(['event_id' => $event->id]);
         $contingent = Contingent::factory()->create(['event_id' => $event->id]);
@@ -110,7 +110,7 @@ class RbacTest extends TestCase
             'contingent_id' => $contingent->id,
             'participant_id' => $participant->id,
         ]);
-        
+
         $newCategory = TournamentCategory::factory()->create(['event_id' => $event->id]);
 
         $response = $this->actingAs($admin)->put("/registrations/{$registration->id}", [
@@ -122,7 +122,7 @@ class RbacTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        
+
         $registration->refresh();
         $this->assertEquals($newCategory->id, $registration->category_id);
     }

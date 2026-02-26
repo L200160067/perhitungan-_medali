@@ -116,16 +116,17 @@ class RegistrationController extends Controller
      */
     private function isEventLocked(?int $categoryId): bool
     {
-        if (!$categoryId) {
+        if (! $categoryId) {
             return false;
         }
 
         $category = TournamentCategory::find($categoryId);
-        if (!$category) {
+        if (! $category) {
             return false;
         }
 
         $event = Event::find($category->event_id);
+
         return $event && $event->is_locked;
     }
 
@@ -143,6 +144,7 @@ class RegistrationController extends Controller
 
         // Redirect back with original query params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('registrations.index', $queryParams)->with('success', 'Pendaftaran berhasil ditambahkan!');
     }
 
@@ -185,6 +187,7 @@ class RegistrationController extends Controller
 
         // Redirect back with original query params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('registrations.index', $queryParams)->with('success', 'Pendaftaran berhasil diperbarui!');
     }
 
@@ -202,6 +205,7 @@ class RegistrationController extends Controller
 
         // Redirect back with original query params (passed via hidden input in delete form)
         $queryParams = request()->except(['_token', '_method']);
+
         return redirect()->route('registrations.index', $queryParams)->with('success', 'Pendaftaran berhasil dihapus!');
     }
 
@@ -209,6 +213,7 @@ class RegistrationController extends Controller
     {
         // Check policy if needed, though authorizeResource handles standard CRUD
         $this->authorize('create', Registration::class);
+
         return view('registrations.import');
     }
 
@@ -228,17 +233,18 @@ class RegistrationController extends Controller
             $failures = $e->failures();
             $messages = [];
             foreach ($failures as $failure) {
-                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $messages[] = 'Baris '.$failure->row().': '.implode(', ', $failure->errors());
             }
+
             return redirect()->back()->withErrors($messages);
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['file' => 'Terjadi kesalahan saat import: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['file' => 'Terjadi kesalahan saat import: '.$e->getMessage()]);
         }
     }
 
     public function bulkDestroy(Request $request)
     {
-        if (!auth()->user()->hasRole('admin')) {
+        if (! auth()->user()->hasRole('admin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -262,6 +268,7 @@ class RegistrationController extends Controller
         Registration::whereIn('id', $ids)->delete();
 
         $queryParams = request()->except(['_token', '_method', 'ids']);
-        return redirect()->route('registrations.index', $queryParams)->with('success', count($ids) . ' Pendaftaran berhasil dihapus!');
+
+        return redirect()->route('registrations.index', $queryParams)->with('success', count($ids).' Pendaftaran berhasil dihapus!');
     }
 }

@@ -42,7 +42,7 @@ class DashboardService
             ->join('events', 'contingents.event_id', '=', 'events.id')
             ->where(function ($q) {
                 $q->where('tournament_categories.category_type', '=', 'prestasi')
-                  ->orWhere('events.count_festival_medals', '=', true);
+                    ->orWhere('events.count_festival_medals', '=', true);
             });
 
         if ($eventId) {

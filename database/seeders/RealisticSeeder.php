@@ -30,10 +30,10 @@ class RealisticSeeder extends Seeder
 
         // 2. Create Realistic Dojangs
         $dojangNames = [
-            'Garuda Academy', 'Satria Muda Taekwondo', 'Black Tiger Club', 
+            'Garuda Academy', 'Satria Muda Taekwondo', 'Black Tiger Club',
             'Eagle Spirit Dojang', 'Siliwangi Taekwondo Center', 'Iron Fist Dojo',
             'Victory Taekwondo Team', 'Harmony Martial Arts', 'Phoenix Rising',
-            'Dragon Force Team'
+            'Dragon Force Team',
         ];
 
         $dojangs = collect();
@@ -43,10 +43,10 @@ class RealisticSeeder extends Seeder
 
         // 3. Create Events with different rules
         $events = collect();
-        
+
         // Event A: Standard (Prestasi only counts)
         $events->push(Event::create([
-            'name' => 'Kejuaraan Nasional Pelajar ' . date('Y'),
+            'name' => 'Kejuaraan Nasional Pelajar '.date('Y'),
             'start_date' => Carbon::now()->addDays(14),
             'end_date' => Carbon::now()->addDays(16),
             'gold_point' => 5,
@@ -57,7 +57,7 @@ class RealisticSeeder extends Seeder
 
         // Event B: Festival Friendly (Festival counts)
         $events->push(Event::create([
-            'name' => 'Festival Taekwondo Ceria ' . date('Y'),
+            'name' => 'Festival Taekwondo Ceria '.date('Y'),
             'start_date' => Carbon::now()->addMonths(2),
             'end_date' => Carbon::now()->addMonths(2)->addDays(2),
             'gold_point' => 3,
@@ -76,7 +76,7 @@ class RealisticSeeder extends Seeder
                 $contingent = Contingent::create([
                     'event_id' => $event->id,
                     'dojang_id' => $dojang->id,
-                    'name' => $dojang->name . ' - ' . substr($event->name, 0, 10),
+                    'name' => $dojang->name.' - '.substr($event->name, 0, 10),
                 ]);
 
                 // Generate 10-15 participants per DOJANG per EVENT
@@ -112,7 +112,7 @@ class RealisticSeeder extends Seeder
             ['name' => 'Cadet U-33kg', 'min_weight' => 0, 'max_weight' => 33, 'min_age' => 12, 'max_age' => 14],
             ['name' => 'Cadet U-41kg', 'min_weight' => 33, 'max_weight' => 41, 'min_age' => 12, 'max_age' => 14],
             ['name' => 'Cadet U-51kg', 'min_weight' => 41, 'max_weight' => 51, 'min_age' => 12, 'max_age' => 14],
-            
+
             // Junior (15-17 years)
             ['name' => 'Junior U-45kg', 'min_weight' => 0, 'max_weight' => 45, 'min_age' => 15, 'max_age' => 17],
             ['name' => 'Junior U-55kg', 'min_weight' => 45, 'max_weight' => 55, 'min_age' => 15, 'max_age' => 17],
@@ -156,7 +156,9 @@ class RealisticSeeder extends Seeder
                    $age >= $cat->min_age && $age <= $cat->max_age;
         });
 
-        if ($matches->isEmpty()) return;
+        if ($matches->isEmpty()) {
+            return;
+        }
 
         $category = $matches->random();
 
@@ -165,13 +167,17 @@ class RealisticSeeder extends Seeder
         if (rand(1, 100) <= ($category->isPrestasi() ? 40 : 80)) {
             // Simple distribution logic
             $roll = rand(1, 100);
-            if ($roll <= 10) $medalId = $medals['gold']->id;
-            elseif ($roll <= 30) $medalId = $medals['silver']->id;
-            else $medalId = $medals['bronze']->id;
-            
+            if ($roll <= 10) {
+                $medalId = $medals['gold']->id;
+            } elseif ($roll <= 30) {
+                $medalId = $medals['silver']->id;
+            } else {
+                $medalId = $medals['bronze']->id;
+            }
+
             // CHECK LIMITS for Prestasi
             if ($category->isPrestasi()) {
-                 $limit = match ($medalId) {
+                $limit = match ($medalId) {
                     $medals['gold']->id => 1,
                     $medals['silver']->id => 1,
                     $medals['bronze']->id => 2,

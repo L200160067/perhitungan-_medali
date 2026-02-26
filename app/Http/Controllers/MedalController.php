@@ -41,6 +41,7 @@ class MedalController extends Controller
         }
 
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('medals.index', $queryParams)->with('success', 'Medali berhasil ditambahkan!');
     }
 
@@ -69,6 +70,7 @@ class MedalController extends Controller
         }
 
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('medals.index', $queryParams)->with('success', 'Medali berhasil diperbarui!');
     }
 

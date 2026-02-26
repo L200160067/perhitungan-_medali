@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreContingentRequest;
 use App\Http\Requests\UpdateContingentRequest;
+use App\Imports\ContingentImport;
 use App\Models\Contingent;
 use App\Models\Dojang;
 use App\Models\Event;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
-use App\Imports\ContingentImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\Response;
 
 class ContingentController extends Controller
 {
@@ -87,6 +87,7 @@ class ContingentController extends Controller
 
         // Redirect back with params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('contingents.index', $queryParams)->with('success', 'Kontingen berhasil ditambahkan!');
     }
 
@@ -122,6 +123,7 @@ class ContingentController extends Controller
 
         // Redirect back with params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('contingents.index', $queryParams)->with('success', 'Kontingen berhasil diperbarui!');
     }
 
@@ -135,12 +137,14 @@ class ContingentController extends Controller
 
         // Redirect back with params
         $queryParams = request()->except(['_token', '_method']);
+
         return redirect()->route('contingents.index', $queryParams)->with('success', 'Kontingen berhasil dihapus!');
     }
 
     public function import()
     {
         $this->authorize('create', Contingent::class);
+
         return view('contingents.import');
     }
 
@@ -160,17 +164,18 @@ class ContingentController extends Controller
             $failures = $e->failures();
             $messages = [];
             foreach ($failures as $failure) {
-                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $messages[] = 'Baris '.$failure->row().': '.implode(', ', $failure->errors());
             }
+
             return redirect()->back()->withErrors($messages);
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: '.$e->getMessage()]);
         }
     }
 
     public function bulkDestroy(Request $request)
     {
-        if (!auth()->user()->hasRole('admin')) {
+        if (! auth()->user()->hasRole('admin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -183,6 +188,7 @@ class ContingentController extends Controller
         Contingent::whereIn('id', $ids)->delete();
 
         $queryParams = request()->except(['_token', '_method', 'ids']);
-        return redirect()->route('contingents.index', $queryParams)->with('success', count($ids) . ' Kontingen berhasil dihapus!');
+
+        return redirect()->route('contingents.index', $queryParams)->with('success', count($ids).' Kontingen berhasil dihapus!');
     }
 }

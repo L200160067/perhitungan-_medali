@@ -3,26 +3,23 @@
 namespace App\Imports;
 
 use App\Enums\CategoryType;
-use App\Enums\TournamentType;
 use App\Enums\TournamentGender;
+use App\Enums\TournamentType;
 use App\Models\Event;
 use App\Models\TournamentCategory;
 use Maatwebsite\Excel\Concerns\OnEachRow;
-use Maatwebsite\Excel\Row;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Row;
 
-class TournamentCategoryImport implements OnEachRow, WithValidation, WithHeadingRow, WithChunkReading, SkipsEmptyRows, WithMapping
+class TournamentCategoryImport implements OnEachRow, SkipsEmptyRows, WithChunkReading, WithHeadingRow, WithMapping, WithValidation
 {
     /**
-    * @param mixed $row
-    *
-    * @return array
-    */
+     * @param  mixed  $row
+     */
     public function map($row): array
     {
         // Trim all string values in the row
@@ -31,30 +28,27 @@ class TournamentCategoryImport implements OnEachRow, WithValidation, WithHeading
         }, $row);
     }
 
-    /**
-    * @param Row $row
-    */
     public function onRow(Row $row)
     {
         $rowIndex = $row->getIndex();
-        $row      = $row->toArray();
+        $row = $row->toArray();
 
         // Ensure keys are present before checking (Mapping handles raw rows, but onRow gets a Row object)
         // Row object -> toArray() returns the mapped array? Yes.
-        
+
         if (empty($row['nama_kategori']) || empty($row['nama_pertandingan'])) {
             return;
         }
 
         // Find Event (Case-insensitive search for robustness)
         $event = Event::where('name', $row['nama_pertandingan'])->first();
-        
+
         // If exact match fails, try case-insensitive LIKE (for SQLite/Postgres safety if needed)
-        if (!$event) {
-             $event = Event::where('name', 'LIKE', $row['nama_pertandingan'])->first();
+        if (! $event) {
+            $event = Event::where('name', 'LIKE', $row['nama_pertandingan'])->first();
         }
 
-        if (!$event) {
+        if (! $event) {
             // Skip if event not found
             return;
         }
@@ -87,21 +81,30 @@ class TournamentCategoryImport implements OnEachRow, WithValidation, WithHeading
     private function mapCompetitionType($value)
     {
         $value = strtolower($value);
-        if (str_contains($value, 'poomsae')) return TournamentType::Poomsae;
+        if (str_contains($value, 'poomsae')) {
+            return TournamentType::Poomsae;
+        }
+
         return TournamentType::Kyourugi;
     }
 
     private function mapCategoryType($value)
     {
         $value = strtolower($value);
-        if (str_contains($value, 'festival')) return CategoryType::Festival;
+        if (str_contains($value, 'festival')) {
+            return CategoryType::Festival;
+        }
+
         return CategoryType::Prestasi;
     }
 
     private function mapGender($value)
     {
         $value = strtolower($value);
-        if ($value === 'p' || $value === 'f' || $value === 'female' || $value === 'perempuan') return TournamentGender::Female;
+        if ($value === 'p' || $value === 'f' || $value === 'female' || $value === 'perempuan') {
+            return TournamentGender::Female;
+        }
+
         return TournamentGender::Male;
     }
 

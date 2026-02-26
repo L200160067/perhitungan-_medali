@@ -6,22 +6,19 @@ use App\Enums\ParticipantGender;
 use App\Models\Dojang;
 use App\Models\Participant;
 use Maatwebsite\Excel\Concerns\OnEachRow;
-use Maatwebsite\Excel\Row;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Row;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class ParticipantImport implements OnEachRow, WithValidation, WithHeadingRow, WithChunkReading, SkipsEmptyRows
+class ParticipantImport implements OnEachRow, SkipsEmptyRows, WithChunkReading, WithHeadingRow, WithValidation
 {
-    /**
-    * @param Row $row
-    */
     public function onRow(Row $row)
     {
         $rowIndex = $row->getIndex();
-        $row      = $row->toArray();
+        $row = $row->toArray();
 
         if (empty($row['nama'])) {
             return;
@@ -29,7 +26,7 @@ class ParticipantImport implements OnEachRow, WithValidation, WithHeadingRow, Wi
 
         // Find or Create Dojang
         $dojang = null;
-        if (!empty($row['dojang'])) {
+        if (! empty($row['dojang'])) {
             $dojang = Dojang::firstOrCreate(['name' => $row['dojang']]);
         }
 
@@ -52,12 +49,15 @@ class ParticipantImport implements OnEachRow, WithValidation, WithHeadingRow, Wi
 
     private function transformDate($value)
     {
-        if (!$value) return null;
-        
+        if (! $value) {
+            return null;
+        }
+
         try {
             if (is_numeric($value)) {
                 return Date::excelToDateTimeObject($value);
             }
+
             return \Carbon\Carbon::parse($value);
         } catch (\Exception $e) {
             return null;
@@ -67,7 +67,10 @@ class ParticipantImport implements OnEachRow, WithValidation, WithHeadingRow, Wi
     private function mapGender($value)
     {
         $value = strtolower($value);
-        if ($value === 'p' || $value === 'f' || $value === 'female' || $value === 'perempuan') return ParticipantGender::Female;
+        if ($value === 'p' || $value === 'f' || $value === 'female' || $value === 'perempuan') {
+            return ParticipantGender::Female;
+        }
+
         return ParticipantGender::Male;
     }
 

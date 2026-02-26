@@ -9,13 +9,9 @@ use App\Models\Dojang;
 use App\Models\Event;
 use App\Models\Medal;
 use App\Models\Participant;
-use App\Models\Registration;
 use App\Models\TournamentCategory;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
-use Tests\TestCase;
-
-
 
 beforeEach(function () {
     /** @var \Tests\TestCase $this */

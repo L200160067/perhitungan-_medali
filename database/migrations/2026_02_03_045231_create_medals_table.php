@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('medals', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique(); // gold, silver, bronze
-    $table->unsignedTinyInteger('rank'); // 1,2,3
+            $table->unsignedTinyInteger('rank'); // 1,2,3
             $table->timestamps();
         });
     }

@@ -6,7 +6,6 @@ use App\Models\Dojang;
 use App\Models\Participant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
@@ -94,7 +93,7 @@ class ParticipantPhotoTest extends TestCase
         Storage::fake('public');
         $dojang = Dojang::factory()->create();
         $oldFile = UploadedFile::fake()->image('old.jpg', 450, 600);
-        
+
         $participant = Participant::factory()->create([
             'dojang_id' => $dojang->id,
             'photo' => $oldFile->store('participants-photos', 'public'),
@@ -111,7 +110,7 @@ class ParticipantPhotoTest extends TestCase
         ]);
 
         $response->assertRedirect(route('participants.index'));
-        
+
         $participant->refresh();
         Storage::disk('public')->assertExists($participant->photo);
         Storage::disk('public')->assertMissing($oldFile->hashName('participants-photos'));
@@ -122,7 +121,7 @@ class ParticipantPhotoTest extends TestCase
         Storage::fake('public');
         $dojang = Dojang::factory()->create();
         $file = UploadedFile::fake()->image('avatar.jpg', 450, 600);
-        
+
         $participant = Participant::factory()->create([
             'dojang_id' => $dojang->id,
             'photo' => $file->store('participants-photos', 'public'),

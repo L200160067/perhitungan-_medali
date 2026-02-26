@@ -25,7 +25,7 @@ class UpdateRegistrationRequest extends FormRequest
         ];
 
         if ($this->user()->hasRole('participant')) {
-             // Participant Logic (if needed later)
+            // Participant Logic (if needed later)
         }
 
         if ($this->user()->hasRole('admin')) {

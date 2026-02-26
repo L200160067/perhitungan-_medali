@@ -21,6 +21,7 @@ class RegistrationService
             }
 
             $this->validateBusinessRules($data);
+
             return Registration::create($data);
         });
     }
@@ -30,11 +31,11 @@ class RegistrationService
         return DB::transaction(function () use ($registration, $data) {
             // 1. Resolve Category ID (from data or existing)
             $categoryId = $data['category_id'] ?? $registration->category_id;
-            
+
             // 2. Lock the Category to prevent race conditions during medal limit check
             // This serializes updates for the same category
             if ($categoryId) {
-                 TournamentCategory::where('id', $categoryId)->lockForUpdate()->first();
+                TournamentCategory::where('id', $categoryId)->lockForUpdate()->first();
             }
 
             // 3. Validate Business Rules/Limits
@@ -42,7 +43,7 @@ class RegistrationService
 
             // 4. Perform Update
             $registration->update($data);
-            
+
             return $registration;
         });
     }
@@ -73,7 +74,9 @@ class RegistrationService
     private function checkMedalLimit(TournamentCategory $category, int $medalId, ?int $ignoreRegistrationId = null): void
     {
         $medal = Medal::find($medalId);
-        if (!$medal) return;
+        if (! $medal) {
+            return;
+        }
 
         $limit = match ($medal->name) {
             'gold' => 1,
@@ -93,11 +96,10 @@ class RegistrationService
 
         if ($count >= $limit) {
             throw ValidationException::withMessages([
-                'medal_id' => "Batas perolehan medali tercapai. Untuk kategori Prestasi, hanya diperbolehkan: 1 Emas, 1 Perak, dan 2 Perunggu.",
+                'medal_id' => 'Batas perolehan medali tercapai. Untuk kategori Prestasi, hanya diperbolehkan: 1 Emas, 1 Perak, dan 2 Perunggu.',
             ]);
         }
     }
-
 
     public function getMedalStats(?int $eventId = null, ?string $search = null): array
     {

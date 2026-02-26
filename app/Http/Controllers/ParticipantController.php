@@ -5,15 +5,14 @@ namespace App\Http\Controllers;
 use App\Enums\ParticipantGender;
 use App\Http\Requests\StoreParticipantRequest;
 use App\Http\Requests\UpdateParticipantRequest;
-use App\Models\Participant;
-use App\Models\Dojang;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Http\Request;
 use App\Imports\ParticipantImport;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Dojang;
+use App\Models\Participant;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\Response;
 
 class ParticipantController extends Controller
 {
@@ -93,6 +92,7 @@ class ParticipantController extends Controller
 
         // Redirect back with params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('participants.index', $queryParams)->with('success', 'Peserta berhasil ditambahkan!');
     }
 
@@ -142,6 +142,7 @@ class ParticipantController extends Controller
 
         // Redirect back with params
         $queryParams = $request->input('query_params', []);
+
         return redirect()->route('participants.index', $queryParams)->with('success', 'Peserta berhasil diperbarui!');
     }
 
@@ -159,12 +160,14 @@ class ParticipantController extends Controller
 
         // Redirect back with params
         $queryParams = request()->except(['_token', '_method']);
+
         return redirect()->route('participants.index', $queryParams)->with('success', 'Peserta berhasil dihapus!');
     }
 
     public function import()
     {
         $this->authorize('create', Participant::class);
+
         return view('participants.import');
     }
 
@@ -184,17 +187,18 @@ class ParticipantController extends Controller
             $failures = $e->failures();
             $messages = [];
             foreach ($failures as $failure) {
-                $messages[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $messages[] = 'Baris '.$failure->row().': '.implode(', ', $failure->errors());
             }
+
             return redirect()->back()->withErrors($messages);
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: '.$e->getMessage()]);
         }
     }
 
     public function bulkDestroy(Request $request)
     {
-        if (!auth()->user()->hasRole('admin')) {
+        if (! auth()->user()->hasRole('admin')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -206,14 +210,15 @@ class ParticipantController extends Controller
 
         $participants = Participant::whereIn('id', $ids)->get();
         foreach ($participants as $participant) {
-             if ($participant->photo) {
+            if ($participant->photo) {
                 Storage::disk('public')->delete($participant->photo);
             }
             $participant->delete();
         }
 
         $queryParams = request()->except(['_token', '_method', 'ids']);
-        return redirect()->route('participants.index', $queryParams)->with('success', count($ids) . ' Peserta berhasil dihapus!');
+
+        return redirect()->route('participants.index', $queryParams)->with('success', count($ids).' Peserta berhasil dihapus!');
     }
 
     /**
@@ -221,13 +226,41 @@ class ParticipantController extends Controller
      */
     private function processPhoto(UploadedFile $file): string
     {
-        $image = Image::read($file);
-        $image->cover(450, 600);
+        $targetWidth = 450;
+        $targetHeight = 600;
+        $targetRatio = $targetWidth / $targetHeight;
 
-        $filename = uniqid('participant_') . '.jpg';
-        $path = 'participants-photos/' . $filename;
+        $sourceImage = imagecreatefromstring(file_get_contents($file->getPathname()));
+        $sourceWidth = imagesx($sourceImage);
+        $sourceHeight = imagesy($sourceImage);
+        $sourceRatio = $sourceWidth / $sourceHeight;
 
-        Storage::disk('public')->put($path, $image->toJpeg(80));
+        if ($sourceRatio > $targetRatio) {
+            $newWidth = (int) ($sourceHeight * $targetRatio);
+            $newHeight = $sourceHeight;
+        } else {
+            $newWidth = $sourceWidth;
+            $newHeight = (int) ($sourceWidth / $targetRatio);
+        }
+
+        $cropX = (int) (($sourceWidth - $newWidth) / 2);
+        $cropY = (int) (($sourceHeight - $newHeight) / 2);
+
+        $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
+        imagecopyresampled($targetImage, $sourceImage, 0, 0, $cropX, $cropY, $targetWidth, $targetHeight, $newWidth, $newHeight);
+
+        $filename = uniqid('participant_').'.jpg';
+        $path = 'participants-photos/'.$filename;
+
+        // Save to stream then to storage
+        ob_start();
+        imagejpeg($targetImage, null, 80);
+        $imageData = ob_get_clean();
+
+        Storage::disk('public')->put($path, $imageData);
+
+        imagedestroy($sourceImage);
+        imagedestroy($targetImage);
 
         return $path;
     }
